@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+.env
+*.log
+server/storage/uploads/*
+!server/storage/uploads/.gitkeep
+server/storage/data.sqlite
+web/.vite

@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  color: #221b16;
+  background:
+    radial-gradient(circle at top left, rgba(255, 244, 188, 0.75), transparent 32%),
+    radial-gradient(circle at top right, rgba(142, 220, 198, 0.42), transparent 34%),
+    linear-gradient(180deg, #f8f4ea 0%, #f5eee0 54%, #efe5d6 100%);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 244, 188, 0.75), transparent 32%),
+    radial-gradient(circle at top right, rgba(142, 220, 198, 0.42), transparent 34%),
+    linear-gradient(180deg, #f8f4ea 0%, #f5eee0 54%, #efe5d6 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.display-font {
+  font-family: "Space Grotesk", "Manrope", sans-serif;
+}
+
+.soft-panel {
+  background: rgba(255, 252, 246, 0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(120, 88, 54, 0.12);
+  box-shadow: 0 20px 50px rgba(102, 76, 43, 0.12);
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(113, 93, 72, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(113, 93, 72, 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
