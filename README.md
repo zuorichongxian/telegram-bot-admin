@@ -237,3 +237,26 @@ Controller 只负责接收请求和返回响应，Telegram 逻辑没有写在 co
 - 切换头像时会新增 Telegram 资料照片，不会自动清理历史头像
 - 消息目标依赖 Telegram 可解析的对话对象
 
+
+## Railway one-click deploy
+
+This repository includes `railway.json` and can be deployed directly on Railway.
+
+Required environment variables:
+
+```env
+PORT=3001
+FRONTEND_ORIGIN=*
+TELEGRAM_APP_ID=123456
+TELEGRAM_APP_HASH=your_telegram_app_hash
+LOG_LIMIT=50
+DATABASE_FILE=/data/data.sqlite
+UPLOADS_DIR=/data/uploads
+VITE_API_BASE_URL=/
+```
+
+Important:
+
+- Create and mount a Railway Volume to `/data`.
+- `DATABASE_FILE` and `UPLOADS_DIR` must point to this mounted volume path.
+- Without a volume, SQLite and uploaded files will not be persistent.

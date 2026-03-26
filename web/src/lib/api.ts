@@ -105,7 +105,10 @@ export class ApiError extends Error {
   }
 }
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+const fallbackBaseUrl =
+  typeof window !== "undefined" ? window.location.origin : "http://localhost:3001";
+
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? fallbackBaseUrl;
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<ApiEnvelope<T>> {
   const headers = new Headers(init?.headers);

@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import fs from "node:fs";
+import path from "node:path";
 
 import { env, getCorsOrigins } from "./config/env.js";
 import { botControlRouter } from "./routes/botControlRoutes.js";
@@ -13,6 +15,8 @@ import { sessionRouter } from "./routes/sessionRoutes.js";
 
 export function createApp() {
   const app = express();
+  const webDistDir = path.join(env.projectRoot, "web", "dist");
+  const hasBuiltWeb = fs.existsSync(webDistDir);
 
   app.use(
     cors({
@@ -38,6 +42,15 @@ export function createApp() {
   app.use(botProfileRouter);
   app.use(botControlRouter);
   app.use(logRouter);
+
+  if (hasBuiltWeb) {
+    app.use(express.static(webDistDir));
+
+    app.get(/^\/(?!api|uploads|health).*/, (_req, res) => {
+      res.sendFile(path.join(webDistDir, "index.html"));
+    });
+  }
+
   app.use(errorHandler);
 
   return app;

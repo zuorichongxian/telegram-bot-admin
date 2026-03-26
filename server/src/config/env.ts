@@ -25,7 +25,9 @@ const envSchema = z.object({
   FRONTEND_ORIGIN: z.string().default("http://localhost:5173"),
   TELEGRAM_APP_ID: z.coerce.number().int().positive(),
   TELEGRAM_APP_HASH: z.string().min(1),
-  LOG_LIMIT: z.coerce.number().int().positive().default(50)
+  LOG_LIMIT: z.coerce.number().int().positive().default(50),
+  DATABASE_FILE: z.string().trim().min(1).optional(),
+  UPLOADS_DIR: z.string().trim().min(1).optional()
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -39,8 +41,12 @@ export const env = {
   ...parsed.data,
   serverRoot,
   projectRoot,
-  databaseFile: path.join(serverRoot, "storage", "data.sqlite"),
-  uploadsDir: path.join(serverRoot, "storage", "uploads")
+  databaseFile: parsed.data.DATABASE_FILE
+    ? path.resolve(parsed.data.DATABASE_FILE)
+    : path.join(serverRoot, "storage", "data.sqlite"),
+  uploadsDir: parsed.data.UPLOADS_DIR
+    ? path.resolve(parsed.data.UPLOADS_DIR)
+    : path.join(serverRoot, "storage", "uploads")
 };
 
 export function getCorsOrigins(): string[] | boolean {
