@@ -108,7 +108,25 @@ export class ApiError extends Error {
 const fallbackBaseUrl =
   typeof window !== "undefined" ? window.location.origin : "http://localhost:3001";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? fallbackBaseUrl;
+function normalizeApiBaseUrl(rawBaseUrl: string | undefined): string {
+  if (!rawBaseUrl) {
+    return fallbackBaseUrl;
+  }
+
+  const trimmed = rawBaseUrl.trim();
+
+  if (!trimmed || trimmed === "/") {
+    return fallbackBaseUrl;
+  }
+
+  try {
+    return new URL(trimmed).toString();
+  } catch {
+    return new URL(trimmed, fallbackBaseUrl).toString();
+  }
+}
+
+export const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<ApiEnvelope<T>> {
   const headers = new Headers(init?.headers);
