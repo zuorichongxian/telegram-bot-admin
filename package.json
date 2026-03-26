@@ -11,6 +11,9 @@
     "build": "npm run build --workspace server && npm run build --workspace web",
     "start": "npm run start --workspace server"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
