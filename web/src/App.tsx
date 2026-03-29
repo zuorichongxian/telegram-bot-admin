@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { MetricCard } from "./components/AppPrimitives";
 import { API_BASE_URL } from "./lib/api";
@@ -36,7 +36,6 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
 function MainApp() {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("user");
   const [flash, setFlash] = useState<FlashState | null>(null);
-  const navigate = useNavigate();
 
   function showSuccess(message: string) {
     setFlash({
