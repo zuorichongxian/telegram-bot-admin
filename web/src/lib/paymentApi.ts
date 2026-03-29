@@ -110,7 +110,8 @@ export const ORDER_STATUS_MAP: Record<number, string> = {
 };
 
 // 根据环境判断使用代理还是直接访问
-const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+// 生产环境也使用后端代理，避免 CORS 问题
+const useProxy = typeof window !== 'undefined';
 
 export const DEFAULT_CONFIG = {
   merchantNo: "4760774446035387265",
@@ -118,21 +119,21 @@ export const DEFAULT_CONFIG = {
   channelCode: "",
   notifyUrl: "",
   returnUrl: "",
-  // 开发环境使用代理，生产环境使用直接地址
-  collectOrderApi: isDev 
-    ? "/api/payment/collectOrder/create" 
+  // 所有环境都使用后端代理，避免 CORS 问题
+  collectOrderApi: useProxy 
+    ? "/api/payment-proxy/collectOrder/create" 
     : "https://pay.fykkbb.xyz/order/api/v1/collectOrder/create",
-  collectOrderQueryApi: isDev 
-    ? "/api/payment/collectOrder/queryCollectOrder" 
+  collectOrderQueryApi: useProxy 
+    ? "/api/payment-proxy/collectOrder/queryCollectOrder" 
     : "https://pay.fykkbb.xyz/order/api/v1/collectOrder/queryCollectOrder",
-  paymentOrderApi: isDev 
-    ? "/api/payment/paymentOrder/create" 
+  paymentOrderApi: useProxy 
+    ? "/api/payment-proxy/paymentOrder/create" 
     : "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/create",
-  paymentOrderQueryApi: isDev 
-    ? "/api/payment/paymentOrder/queryPaymentOrder" 
+  paymentOrderQueryApi: useProxy 
+    ? "/api/payment-proxy/paymentOrder/queryPaymentOrder" 
     : "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/queryPaymentOrder",
-  merchantInfoApi: isDev 
-    ? "/api/payment/merchant" 
+  merchantInfoApi: useProxy 
+    ? "/api/payment-proxy/merchant" 
     : "https://pay.fykkbb.xyz/order/api/v1/merchant"
 };
 

@@ -12,6 +12,7 @@ import { controlRouter } from "./routes/controlRoutes.js";
 import { identityRouter } from "./routes/identityRoutes.js";
 import { logRouter } from "./routes/logRoutes.js";
 import { paymentCallbackRouter } from "./routes/paymentCallbackRoutes.js";
+import { paymentProxyRouter } from "./routes/paymentProxyRoutes.js";
 import { sessionRouter } from "./routes/sessionRoutes.js";
 
 export function createApp() {
@@ -44,6 +45,7 @@ export function createApp() {
   app.use(botControlRouter);
   app.use(logRouter);
   app.use(paymentCallbackRouter);
+  app.use(paymentProxyRouter);
 
   if (hasBuiltWeb) {
     app.use(express.static(webDistDir));
