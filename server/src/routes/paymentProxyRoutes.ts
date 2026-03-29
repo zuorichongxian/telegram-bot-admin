@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
-const router = Router();
-
-const paymentProxy = createProxyMiddleware({
+export const paymentProxy = createProxyMiddleware({
   target: "https://pay.fykkbb.xyz",
   changeOrigin: true,
   pathRewrite: {
@@ -23,7 +21,5 @@ const paymentProxy = createProxyMiddleware({
   }
 });
 
-// 使用完整路径 /api/payment-proxy/*
-router.all("/api/payment-proxy/*path", paymentProxy);
-
-export const paymentProxyRouter = router;
+// 创建空路由器，实际代理在 app.ts 中配置
+export const paymentProxyRouter = Router();
