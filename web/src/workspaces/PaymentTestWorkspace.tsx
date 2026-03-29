@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Input 
 
 import { Field } from "../components/AppPrimitives";
 import { LoadingButton } from "../components/LoadingButton";
+import { ApiDocPanel, ApiDocSelector, ApiRulesPanel } from "../components/ApiDocPanel";
 import {
   DEFAULT_CONFIG,
   generateOrderNo,
@@ -26,6 +27,7 @@ import {
   type PaymentOrderQueryResponse,
   type MerchantInfoResponse
 } from "../lib/paymentApi";
+import { allApiDocs, type ApiDocInterface } from "../lib/paymentApiDocs";
 
 type LogEntry = {
   id: number;
@@ -89,6 +91,8 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
   });
   const [paymentQueryLoading, setPaymentQueryLoading] = useState(false);
   const [paymentQueryResult, setPaymentQueryResult] = useState<ApiResult<PaymentOrderQueryResponse> | null>(null);
+
+  const [selectedApiDoc, setSelectedApiDoc] = useState<ApiDocInterface>(allApiDocs[0]);
 
   const [merchantInfoLoading, setMerchantInfoLoading] = useState(false);
   const [merchantInfoResult, setMerchantInfoResult] = useState<ApiResult<MerchantInfoResponse> | null>(null);
@@ -957,6 +961,33 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
               暂无回调记录。支付系统发送回调后会在这里显示。
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className="soft-panel rounded-[32px] border-0">
+        <CardHeader>
+          <div>
+            <CardTitle className="display-font text-xl font-bold">接口文档</CardTitle>
+            <CardDescription className="text-sm text-stone-600">查看支付接口的完整参数说明。</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <ApiRulesPanel />
+            
+            <div className="border-t border-stone-200 pt-6">
+              <h3 className="mb-4 text-lg font-semibold text-stone-800">接口列表</h3>
+              <ApiDocSelector
+                apis={allApiDocs}
+                selectedApi={selectedApiDoc}
+                onSelect={setSelectedApiDoc}
+              />
+            </div>
+
+            <div className="border-t border-stone-200 pt-6">
+              <ApiDocPanel apiDoc={selectedApiDoc} />
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
