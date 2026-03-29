@@ -42,7 +42,7 @@ export const paymentProxy = createProxyMiddleware({
 
         console.log("[payment-proxy] response", {
           method: req.method,
-          path: req.originalUrl,
+          path: req.url,
           statusCode: proxyRes.statusCode,
           contentType,
           body: isTruncated ? `${bodyPreview}\n...<truncated>` : bodyPreview
