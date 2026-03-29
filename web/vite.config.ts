@@ -7,6 +7,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      '/api/payment-proxy': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
+      },
       '/api/payment': {
         target: 'https://pay.fykkbb.xyz',
         changeOrigin: true,

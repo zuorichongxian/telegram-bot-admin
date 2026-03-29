@@ -12,7 +12,7 @@ import { controlRouter } from "./routes/controlRoutes.js";
 import { identityRouter } from "./routes/identityRoutes.js";
 import { logRouter } from "./routes/logRoutes.js";
 import { paymentCallbackRouter } from "./routes/paymentCallbackRoutes.js";
-import { paymentProxy, paymentProxyRouter } from "./routes/paymentProxyRoutes.js";
+import { paymentProxy } from "./routes/paymentProxyRoutes.js";
 import { sessionRouter } from "./routes/sessionRoutes.js";
 
 export function createApp() {
