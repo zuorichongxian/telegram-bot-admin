@@ -46,7 +46,7 @@ export function createApp() {
   app.use(logRouter);
   app.use(paymentCallbackRouter);
   app.use("/api/payment-proxy", paymentProxy);
-
+// ---
   if (hasBuiltWeb) {
     app.use(express.static(webDistDir));
 
