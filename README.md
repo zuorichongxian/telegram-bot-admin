@@ -1,4 +1,4 @@
-# Telegram Admin Console MVP
+# Telegram Admin Console MVP。
 
 一个最小可运行的 Telegram 管理后台，支持：
 
