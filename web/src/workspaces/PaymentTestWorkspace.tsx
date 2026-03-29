@@ -10,6 +10,8 @@ import {
   DEFAULT_CONFIG,
   generateOrderNo,
   getDefaultCallbackUrls,
+  getPaymentApiConfig,
+  isProxyApiConfig,
   ORDER_STATUS_MAP,
   type PaymentCallback,
   type PaymentConfig,
@@ -56,6 +58,15 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
     paymentOrderQueryApi: DEFAULT_CONFIG.paymentOrderQueryApi,
     merchantInfoApi: DEFAULT_CONFIG.merchantInfoApi
   });
+  const [useProxyApi, setUseProxyApi] = useState(() =>
+    isProxyApiConfig({
+      collectOrderApi: DEFAULT_CONFIG.collectOrderApi,
+      collectOrderQueryApi: DEFAULT_CONFIG.collectOrderQueryApi,
+      paymentOrderApi: DEFAULT_CONFIG.paymentOrderApi,
+      paymentOrderQueryApi: DEFAULT_CONFIG.paymentOrderQueryApi,
+      merchantInfoApi: DEFAULT_CONFIG.merchantInfoApi
+    })
+  );
 
   const [showKey, setShowKey] = useState(false);
 
@@ -349,6 +360,15 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
     setConfig((prev) => ({ ...prev, [key]: value }));
   }
 
+  function handleToggleProxyApi(checked: boolean) {
+    setUseProxyApi(checked);
+    const apiConfig = getPaymentApiConfig(checked);
+    setConfig((prev) => ({
+      ...prev,
+      ...apiConfig
+    }));
+  }
+
   function updateCollectOrderForm(key: string, value: string) {
     setCollectOrderForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -437,6 +457,23 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
                 />
               </div>
             </Field>
+          </div>
+          <div className="mt-4 flex items-center justify-between rounded-2xl border border-stone-200 bg-white/80 px-4 py-3">
+            <div>
+              <p className="text-sm font-semibold text-stone-800">是否使用代理</p>
+              <p className="text-xs text-stone-500">
+                开启后走 /api/payment-proxy；关闭后直连支付域名。
+              </p>
+            </div>
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-stone-700">
+              <input
+                checked={useProxyApi}
+                className="h-4 w-4 accent-emerald-600"
+                onChange={(e) => handleToggleProxyApi(e.currentTarget.checked)}
+                type="checkbox"
+              />
+              {useProxyApi ? "已开启" : "已关闭"}
+            </label>
           </div>
           <div className="mt-4 flex gap-3">
             <button

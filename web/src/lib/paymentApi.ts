@@ -111,7 +111,40 @@ export const ORDER_STATUS_MAP: Record<number, string> = {
 
 // 根据环境判断使用代理还是直接访问
 // 生产环境也使用后端代理，避免 CORS 问题
-const useProxy = typeof window !== 'undefined';
+export type PaymentApiConfig = {
+  collectOrderApi: string;
+  collectOrderQueryApi: string;
+  paymentOrderApi: string;
+  paymentOrderQueryApi: string;
+  merchantInfoApi: string;
+};
+
+export function getPaymentApiConfig(useProxy: boolean): PaymentApiConfig {
+  if (useProxy) {
+    return {
+      collectOrderApi: "/api/payment-proxy/collectOrder/create",
+      collectOrderQueryApi: "/api/payment-proxy/collectOrder/queryCollectOrder",
+      paymentOrderApi: "/api/payment-proxy/paymentOrder/create",
+      paymentOrderQueryApi: "/api/payment-proxy/paymentOrder/queryPaymentOrder",
+      merchantInfoApi: "/api/payment-proxy/merchant"
+    };
+  }
+
+  return {
+    collectOrderApi: "https://pay.fykkbb.xyz/order/api/v1/collectOrder/create",
+    collectOrderQueryApi: "https://pay.fykkbb.xyz/order/api/v1/collectOrder/queryCollectOrder",
+    paymentOrderApi: "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/create",
+    paymentOrderQueryApi: "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/queryPaymentOrder",
+    merchantInfoApi: "https://pay.fykkbb.xyz/order/api/v1/merchant"
+  };
+}
+
+export function isProxyApiConfig(config: PaymentApiConfig): boolean {
+  return config.collectOrderApi.startsWith("/api/payment-proxy");
+}
+
+const useProxy = typeof window !== "undefined";
+const defaultApiConfig = getPaymentApiConfig(useProxy);
 
 export const DEFAULT_CONFIG = {
   merchantNo: "4760774446035387265",
@@ -120,21 +153,11 @@ export const DEFAULT_CONFIG = {
   notifyUrl: "",
   returnUrl: "",
   // 所有环境都使用后端代理，避免 CORS 问题
-  collectOrderApi: useProxy 
-    ? "/api/payment-proxy/collectOrder/create" 
-    : "https://pay.fykkbb.xyz/order/api/v1/collectOrder/create",
-  collectOrderQueryApi: useProxy 
-    ? "/api/payment-proxy/collectOrder/queryCollectOrder" 
-    : "https://pay.fykkbb.xyz/order/api/v1/collectOrder/queryCollectOrder",
-  paymentOrderApi: useProxy 
-    ? "/api/payment-proxy/paymentOrder/create" 
-    : "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/create",
-  paymentOrderQueryApi: useProxy 
-    ? "/api/payment-proxy/paymentOrder/queryPaymentOrder" 
-    : "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/queryPaymentOrder",
-  merchantInfoApi: useProxy 
-    ? "/api/payment-proxy/merchant" 
-    : "https://pay.fykkbb.xyz/order/api/v1/merchant"
+  collectOrderApi: defaultApiConfig.collectOrderApi,
+  collectOrderQueryApi: defaultApiConfig.collectOrderQueryApi,
+  paymentOrderApi: defaultApiConfig.paymentOrderApi,
+  paymentOrderQueryApi: defaultApiConfig.paymentOrderQueryApi,
+  merchantInfoApi: defaultApiConfig.merchantInfoApi
 };
 
 export function getDefaultCallbackUrls(): { notifyUrl: string; returnUrl: string } {
