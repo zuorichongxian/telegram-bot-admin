@@ -91,7 +91,22 @@ class DatabaseManager {
         updated_at TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS payment_callbacks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        merchant_no TEXT NOT NULL,
+        merchant_order_no TEXT NOT NULL,
+        system_order_no TEXT,
+        order_amount TEXT NOT NULL,
+        order_status INTEGER NOT NULL,
+        sign TEXT NOT NULL,
+        raw_data TEXT NOT NULL,
+        verified INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+      );
+
       CREATE UNIQUE INDEX IF NOT EXISTS idx_bots_bot_user_id ON bots (bot_user_id);
+      CREATE INDEX IF NOT EXISTS idx_payment_callbacks_merchant_order_no ON payment_callbacks (merchant_order_no);
+      CREATE INDEX IF NOT EXISTS idx_payment_callbacks_created_at ON payment_callbacks (created_at);
     `);
 
     this.database.run(

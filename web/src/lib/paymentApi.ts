@@ -122,6 +122,43 @@ export const DEFAULT_CONFIG = {
   merchantInfoApi: "https://pay.fykkbb.xyz/order/api/v1/merchant"
 };
 
+export function getDefaultCallbackUrls(): { notifyUrl: string; returnUrl: string } {
+  const backendUrl = window.location.origin;
+  const frontendUrl = window.location.origin;
+
+  return {
+    notifyUrl: `${backendUrl}/api/payment/callback`,
+    returnUrl: `${frontendUrl}/payment-result`
+  };
+}
+
+export type PaymentCallback = {
+  id: number;
+  merchant_no: string;
+  merchant_order_no: string;
+  system_order_no: string | null;
+  order_amount: string;
+  order_status: number;
+  sign: string;
+  raw_data: string;
+  verified: number;
+  created_at: string;
+};
+
+export async function fetchPaymentCallbacks(limit = 50): Promise<ApiResult<PaymentCallback[]>> {
+  const response = await fetch(`${window.location.origin}/api/payment/callbacks?limit=${limit}`);
+
+  return response.json();
+}
+
+export async function clearPaymentCallbacks(): Promise<ApiResult<null>> {
+  const response = await fetch(`${window.location.origin}/api/payment/callbacks`, {
+    method: "DELETE"
+  });
+
+  return response.json();
+}
+
 async function md5(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);
   const hashBuffer = await crypto.subtle.digest("MD5", msgBuffer);

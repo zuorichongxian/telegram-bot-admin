@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import { MetricCard } from "./components/AppPrimitives";
 import { API_BASE_URL } from "./lib/api";
 import { BotManagementWorkspace } from "./workspaces/BotManagementWorkspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
+import { PaymentResultPage } from "./pages/PaymentResultPage";
 
 type FlashState = {
   type: "success" | "error";
@@ -31,9 +33,10 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   }
 ];
 
-export default function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("user");
   const [flash, setFlash] = useState<FlashState | null>(null);
+  const navigate = useNavigate();
 
   function showSuccess(message: string) {
     setFlash({
@@ -52,6 +55,11 @@ export default function App() {
   }
 
   const currentTab = tabs.find((tab) => tab.id === activeTab) ?? tabs[0];
+
+  function handleTabChange(tabId: WorkspaceTab) {
+    setActiveTab(tabId);
+    setFlash(null);
+  }
 
   return (
     <div className="min-h-screen grid-pattern px-4 py-6 text-stone-900 sm:px-6 lg:px-8">
@@ -93,7 +101,7 @@ export default function App() {
                     : "bg-white/80 text-stone-700 hover:bg-white"
                 }`}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
               >
                 {tab.label}
               </button>
@@ -122,5 +130,16 @@ export default function App() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/payment-result" element={<PaymentResultPage />} />
+        <Route path="*" element={<MainApp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

@@ -11,6 +11,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { controlRouter } from "./routes/controlRoutes.js";
 import { identityRouter } from "./routes/identityRoutes.js";
 import { logRouter } from "./routes/logRoutes.js";
+import { paymentCallbackRouter } from "./routes/paymentCallbackRoutes.js";
 import { sessionRouter } from "./routes/sessionRoutes.js";
 
 export function createApp() {
@@ -42,6 +43,7 @@ export function createApp() {
   app.use(botProfileRouter);
   app.use(botControlRouter);
   app.use(logRouter);
+  app.use(paymentCallbackRouter);
 
   if (hasBuiltWeb) {
     app.use(express.static(webDistDir));

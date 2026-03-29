@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Input } from "@heroui/react";
@@ -8,13 +8,17 @@ import { LoadingButton } from "../components/LoadingButton";
 import {
   DEFAULT_CONFIG,
   generateOrderNo,
+  getDefaultCallbackUrls,
   ORDER_STATUS_MAP,
+  type PaymentCallback,
   type PaymentConfig,
   createCollectOrder,
   queryCollectOrder,
   createPaymentOrder,
   queryPaymentOrder,
   queryMerchantInfo,
+  fetchPaymentCallbacks,
+  clearPaymentCallbacks,
   type ApiResult,
   type CollectOrderResponse,
   type CollectOrderQueryResponse,
@@ -91,6 +95,52 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
 
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [logIdCounter, setLogIdCounter] = useState(0);
+
+  const [callbacks, setCallbacks] = useState<PaymentCallback[]>([]);
+  const [callbacksLoading, setCallbacksLoading] = useState(false);
+
+  useEffect(() => {
+    const urls = getDefaultCallbackUrls();
+    setConfig((prev) => ({
+      ...prev,
+      notifyUrl: urls.notifyUrl,
+      returnUrl: urls.returnUrl
+    }));
+  }, []);
+
+  function fillDefaultCallbackUrls() {
+    const urls = getDefaultCallbackUrls();
+    setConfig((prev) => ({
+      ...prev,
+      notifyUrl: urls.notifyUrl,
+      returnUrl: urls.returnUrl
+    }));
+    showSuccess("已自动填充回调地址");
+  }
+
+  async function refreshCallbacks() {
+    setCallbacksLoading(true);
+    try {
+      const result = await fetchPaymentCallbacks(50);
+      if (result.data) {
+        setCallbacks(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch callbacks:", error);
+    } finally {
+      setCallbacksLoading(false);
+    }
+  }
+
+  async function handleClearCallbacks() {
+    try {
+      await clearPaymentCallbacks();
+      setCallbacks([]);
+      showSuccess("回调记录已清空");
+    } catch (error) {
+      showError(error);
+    }
+  }
 
   function addLog(action: string, request?: unknown, response?: unknown, error?: string) {
     const entry: LogEntry = {
@@ -364,21 +414,34 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
               />
             </Field>
             <Field label="异步通知地址">
-              <Input
-                className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-emerald-500"
-                value={config.notifyUrl}
-                onChange={(e) => updateConfig("notifyUrl", e.currentTarget.value)}
-                placeholder="https://example.com/notify"
-              />
+              <div className="flex gap-2">
+                <Input
+                  className="flex-1 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-emerald-500"
+                  value={config.notifyUrl}
+                  onChange={(e) => updateConfig("notifyUrl", e.currentTarget.value)}
+                  placeholder="https://example.com/notify"
+                />
+              </div>
             </Field>
             <Field label="跳转通知地址">
-              <Input
-                className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-emerald-500"
-                value={config.returnUrl}
-                onChange={(e) => updateConfig("returnUrl", e.currentTarget.value)}
-                placeholder="https://example.com/return"
-              />
+              <div className="flex gap-2">
+                <Input
+                  className="flex-1 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-emerald-500"
+                  value={config.returnUrl}
+                  onChange={(e) => updateConfig("returnUrl", e.currentTarget.value)}
+                  placeholder="https://example.com/return"
+                />
+              </div>
             </Field>
+          </div>
+          <div className="mt-4 flex gap-3">
+            <button
+              className="rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
+              type="button"
+              onClick={fillDefaultCallbackUrls}
+            >
+              自动填充回调地址
+            </button>
           </div>
           <div className="mt-4 rounded-[24px] border border-dashed border-stone-300 bg-white/70 p-4 text-sm leading-7 text-stone-600">
             <p>
@@ -824,6 +887,74 @@ export function PaymentTestWorkspace({ showSuccess, showError }: PaymentTestWork
           ) : (
             <div className="rounded-[24px] border border-dashed border-stone-300 bg-white/70 p-8 text-center text-sm text-stone-500">
               暂无操作日志。执行 API 调用后会在这里显示记录。
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="soft-panel rounded-[32px] border-0">
+        <CardHeader className="flex flex-row items-start justify-between">
+          <div>
+            <CardTitle className="display-font text-xl font-bold">回调记录</CardTitle>
+            <CardDescription className="text-sm text-stone-600">支付系统异步通知记录。</CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <LoadingButton
+              className="rounded-2xl border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700"
+              loading={callbacksLoading}
+              loadingLabel="刷新中..."
+              onPress={() => void refreshCallbacks()}
+            >
+              刷新
+            </LoadingButton>
+            <LoadingButton
+              className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700"
+              isDisabled={callbacks.length === 0}
+              loading={false}
+              onPress={() => void handleClearCallbacks()}
+            >
+              清空
+            </LoadingButton>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {callbacks.length ? (
+            <div className="max-h-[400px] space-y-3 overflow-y-auto">
+              {callbacks.map((callback) => (
+                <div key={callback.id} className="rounded-[24px] border border-stone-200 bg-white/80 p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-stone-800">订单: {callback.merchant_order_no}</p>
+                    <div className="flex items-center gap-2">
+                      <Chip
+                        className={`px-3 py-1 text-xs font-semibold ${
+                          callback.verified
+                            ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border border-rose-200 bg-rose-50 text-rose-700"
+                        }`}
+                      >
+                        {callback.verified ? "签名验证通过" : "签名验证失败"}
+                      </Chip>
+                      <span className="text-xs text-stone-500">{callback.created_at}</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 space-y-1 text-sm text-stone-600">
+                    <p>商户号: {callback.merchant_no}</p>
+                    <p>订单金额: ¥{callback.order_amount}</p>
+                    <p>订单状态: {ORDER_STATUS_MAP[callback.order_status] || callback.order_status}</p>
+                    {callback.system_order_no ? <p>系统订单号: {callback.system_order_no}</p> : null}
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-xs font-medium text-stone-500">原始数据:</p>
+                    <pre className="mt-1 max-h-[100px] overflow-auto rounded-lg bg-stone-100 p-2 text-xs text-stone-700">
+                      {JSON.stringify(JSON.parse(callback.raw_data), null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[24px] border border-dashed border-stone-300 bg-white/70 p-8 text-center text-sm text-stone-500">
+              暂无回调记录。支付系统发送回调后会在这里显示。
             </div>
           )}
         </CardContent>
