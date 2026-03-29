@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
-export const paymentProxyRouter = Router();
+const router = Router();
 
 // 支付 API 代理配置
 const paymentProxy = createProxyMiddleware({
@@ -12,12 +12,10 @@ const paymentProxy = createProxyMiddleware({
   },
   on: {
     proxyReq: (proxyReq, _req, _res) => {
-      // 删除可能导致问题的请求头
       proxyReq.removeHeader("origin");
       proxyReq.removeHeader("referer");
     },
-    proxyRes: (proxyRes, _req, res) => {
-      // 删除支付服务器返回的 CORS 头，避免重复
+    proxyRes: (proxyRes, _req, _res) => {
       proxyRes.headers["access-control-allow-origin"] = undefined;
       proxyRes.headers["access-control-allow-credentials"] = undefined;
       proxyRes.headers["access-control-allow-methods"] = undefined;
@@ -26,17 +24,7 @@ const paymentProxy = createProxyMiddleware({
   }
 });
 
-// 代收下单 - 使用 all 方法处理所有 HTTP 方法
-paymentProxyRouter.all("/payment-proxy/collectOrder/create", paymentProxy);
+// 使用通配符匹配所有 payment-proxy 路径
+router.all("/payment-proxy/*", paymentProxy);
 
-// 代收订单查询
-paymentProxyRouter.all("/payment-proxy/collectOrder/queryCollectOrder", paymentProxy);
-
-// 代付下单
-paymentProxyRouter.all("/payment-proxy/paymentOrder/create", paymentProxy);
-
-// 代付订单查询
-paymentProxyRouter.all("/payment-proxy/paymentOrder/queryPaymentOrder", paymentProxy);
-
-// 商户信息查询
-paymentProxyRouter.all("/payment-proxy/merchant", paymentProxy);
+export const paymentProxyRouter = router;
