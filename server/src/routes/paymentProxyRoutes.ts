@@ -1,13 +1,18 @@
-import { createProxyMiddleware } from "http-proxy-middleware";
+import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 
 export const paymentProxy = createProxyMiddleware({
   target: "https://pay.fykkbb.xyz",
   changeOrigin: true,
+  proxyTimeout: 15000,
+  timeout: 20000,
   pathRewrite: (path) => `/order/api/v1${path}`,
   on: {
-    proxyReq: (proxyReq) => {
-      proxyReq.removeHeader("origin");
-      proxyReq.removeHeader("referer");
+    proxyReq: (proxyReq, req) => {
+      if (!proxyReq.headersSent) {
+        proxyReq.removeHeader("origin");
+        proxyReq.removeHeader("referer");
+      }
+      fixRequestBody(proxyReq, req);
     },
     proxyRes: (proxyRes, req) => {
       proxyRes.headers["access-control-allow-origin"] = undefined;
@@ -48,6 +53,25 @@ export const paymentProxy = createProxyMiddleware({
           body: isTruncated ? `${bodyPreview}\n...<truncated>` : bodyPreview
         });
       });
+    },
+    error: (err, req, res) => {
+      console.error("[payment-proxy] error", {
+        method: req.method,
+        path: req.url,
+        message: err.message
+      });
+
+      const response = res as { writableEnded?: boolean; writeHead: (code: number, headers: Record<string, string>) => void; end: (body: string) => void };
+      if (!response.writableEnded) {
+        response.writeHead(502, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(
+          JSON.stringify({
+            code: "PROXY_ERROR",
+            message: "支付代理请求失败",
+            detail: err.message
+          })
+        );
+      }
     }
   }
 });
