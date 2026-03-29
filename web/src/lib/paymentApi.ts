@@ -109,17 +109,31 @@ export const ORDER_STATUS_MAP: Record<number, string> = {
   8: "匹配失败"
 };
 
+// 根据环境判断使用代理还是直接访问
+const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+
 export const DEFAULT_CONFIG = {
   merchantNo: "4760774446035387265",
   merchantKey: "OHeuY847UqsB2M8ul0bI2ZXTNwpFwcyt",
   channelCode: "",
   notifyUrl: "",
   returnUrl: "",
-  collectOrderApi: "https://pay.fykkbb.xyz/order/api/v1/collectOrder/create",
-  collectOrderQueryApi: "https://pay.fykkbb.xyz/order/api/v1/collectOrder/queryCollectOrder",
-  paymentOrderApi: "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/create",
-  paymentOrderQueryApi: "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/queryPaymentOrder",
-  merchantInfoApi: "https://pay.fykkbb.xyz/order/api/v1/merchant"
+  // 开发环境使用代理，生产环境使用直接地址
+  collectOrderApi: isDev 
+    ? "/api/payment/collectOrder/create" 
+    : "https://pay.fykkbb.xyz/order/api/v1/collectOrder/create",
+  collectOrderQueryApi: isDev 
+    ? "/api/payment/collectOrder/queryCollectOrder" 
+    : "https://pay.fykkbb.xyz/order/api/v1/collectOrder/queryCollectOrder",
+  paymentOrderApi: isDev 
+    ? "/api/payment/paymentOrder/create" 
+    : "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/create",
+  paymentOrderQueryApi: isDev 
+    ? "/api/payment/paymentOrder/queryPaymentOrder" 
+    : "https://pay.fykkbb.xyz/order/api/v1/paymentOrder/queryPaymentOrder",
+  merchantInfoApi: isDev 
+    ? "/api/payment/merchant" 
+    : "https://pay.fykkbb.xyz/order/api/v1/merchant"
 };
 
 export function getDefaultCallbackUrls(): { notifyUrl: string; returnUrl: string } {
