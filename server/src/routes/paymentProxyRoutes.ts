@@ -26,17 +26,17 @@ const paymentProxy = createProxyMiddleware({
   }
 });
 
-// 代收下单
-paymentProxyRouter.post("/payment-proxy/collectOrder/create", paymentProxy);
+// 代收下单 - 使用 all 方法处理所有 HTTP 方法
+paymentProxyRouter.all("/payment-proxy/collectOrder/create", paymentProxy);
 
 // 代收订单查询
-paymentProxyRouter.post("/payment-proxy/collectOrder/queryCollectOrder", paymentProxy);
+paymentProxyRouter.all("/payment-proxy/collectOrder/queryCollectOrder", paymentProxy);
 
 // 代付下单
-paymentProxyRouter.post("/payment-proxy/paymentOrder/create", paymentProxy);
+paymentProxyRouter.all("/payment-proxy/paymentOrder/create", paymentProxy);
 
 // 代付订单查询
-paymentProxyRouter.post("/payment-proxy/paymentOrder/queryPaymentOrder", paymentProxy);
+paymentProxyRouter.all("/payment-proxy/paymentOrder/queryPaymentOrder", paymentProxy);
 
 // 商户信息查询
-paymentProxyRouter.post("/payment-proxy/merchant", paymentProxy);
+paymentProxyRouter.all("/payment-proxy/merchant", paymentProxy);
