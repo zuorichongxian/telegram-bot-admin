@@ -147,6 +147,10 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<A
     throw new ApiError(payload?.message ?? "请求失败。", response.status, payload?.details);
   }
 
+  if (!payload) {
+    throw new ApiError("响应解析失败，返回数据为空。", response.status);
+  }
+
   return payload as ApiEnvelope<T>;
 }
 
