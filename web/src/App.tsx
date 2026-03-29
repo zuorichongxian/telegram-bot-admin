@@ -7,7 +7,7 @@ import { BotManagementWorkspace } from "./workspaces/BotManagementWorkspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
 import { PaymentResultPage } from "./pages/PaymentResultPage";
-
+// 。。。
 type FlashState = {
   type: "success" | "error";
   message: string;
