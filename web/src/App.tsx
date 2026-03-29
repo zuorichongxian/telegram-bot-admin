@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MetricCard } from "./components/AppPrimitives";
 import { API_BASE_URL } from "./lib/api";
 import { BotManagementWorkspace } from "./workspaces/BotManagementWorkspace";
+import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
 
 type FlashState = {
@@ -10,7 +11,7 @@ type FlashState = {
   message: string;
 };
 
-type WorkspaceTab = "user" | "bot";
+type WorkspaceTab = "user" | "bot" | "payment";
 
 const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
@@ -22,6 +23,11 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
     id: "bot",
     label: "Bot 管理",
     description: "接入多个 Bot，并将资料模板一键应用到指定 Bot。"
+  },
+  {
+    id: "payment",
+    label: "拉单测试1",
+    description: "支付接口可视化测试工具，支持代收/代付下单和订单查询。"
   }
 ];
 
@@ -109,8 +115,10 @@ export default function App() {
 
         {activeTab === "user" ? (
           <UserIdentityWorkspace showError={showError} showSuccess={showSuccess} />
-        ) : (
+        ) : activeTab === "bot" ? (
           <BotManagementWorkspace showError={showError} showSuccess={showSuccess} />
+        ) : (
+          <PaymentTestWorkspace showError={showError} showSuccess={showSuccess} />
         )}
       </div>
     </div>
