@@ -23,6 +23,7 @@ const paymentProxy = createProxyMiddleware({
   }
 });
 
-router.all("/payment-proxy/*path", paymentProxy);
+// 使用完整路径 /api/payment-proxy/*
+router.all("/api/payment-proxy/*path", paymentProxy);
 
 export const paymentProxyRouter = router;
