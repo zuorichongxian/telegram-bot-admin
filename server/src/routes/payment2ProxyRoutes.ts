@@ -1,4 +1,33 @@
 import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
+import type { Request } from "express";
+
+import { generateSign } from "../utils/paymentSign.js";
+import { DEFAULT_PAYMENT2_MERCHANT_KEY } from "../utils/payment2Sign.js";
+
+function rewritePayment2Sign(req: Request) {
+  const body = req.body as Record<string, unknown> | undefined;
+  if (!body || typeof body !== "object") {
+    return;
+  }
+
+  const signParams: Record<string, string | number | undefined> = {};
+  for (const [key, rawValue] of Object.entries(body)) {
+    if (key === "sign" || key === "key") {
+      continue;
+    }
+    if (rawValue === undefined || rawValue === null || rawValue === "") {
+      continue;
+    }
+    if (typeof rawValue === "string" || typeof rawValue === "number") {
+      signParams[key] = rawValue;
+    } else {
+      signParams[key] = JSON.stringify(rawValue);
+    }
+  }
+
+  body.sign = generateSign(signParams, DEFAULT_PAYMENT2_MERCHANT_KEY);
+  body.key = DEFAULT_PAYMENT2_MERCHANT_KEY;
+}
 
 export const payment2Proxy = createProxyMiddleware({
   target: "https://jkapi-shengxing.jkcbb.com",
@@ -8,6 +37,7 @@ export const payment2Proxy = createProxyMiddleware({
   pathRewrite: (path) => `/api/v1${path}`,
   on: {
     proxyReq: (proxyReq, req) => {
+      rewritePayment2Sign(req as Request);
       if (!proxyReq.headersSent) {
         proxyReq.removeHeader("origin");
         proxyReq.removeHeader("referer");

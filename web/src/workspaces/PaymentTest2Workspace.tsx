@@ -183,6 +183,11 @@ export function PaymentTest2Workspace({ showSuccess, showError }: PaymentTest2Wo
   async function handleCreateOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (!config.merchantKey.trim()) {
+      showError(new Error("请先填写商户密钥"));
+      return;
+    }
+
     if (!isValidFenAmount(orderForm.amount)) {
       showError(new Error("请输入整数金额，单位为分"));
       return;
@@ -228,6 +233,11 @@ export function PaymentTest2Workspace({ showSuccess, showError }: PaymentTest2Wo
   async function handleQueryOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (!config.merchantKey.trim()) {
+      showError(new Error("请先填写商户密钥"));
+      return;
+    }
+
     if (!queryForm.outTradeNo.trim()) {
       showError(new Error("请输入商户订单号"));
       return;
@@ -255,6 +265,11 @@ export function PaymentTest2Workspace({ showSuccess, showError }: PaymentTest2Wo
   }
 
   async function handleQueryBalance() {
+    if (!config.merchantKey.trim()) {
+      showError(new Error("请先填写商户密钥"));
+      return;
+    }
+
     setBalanceLoading(true);
     setBalanceResult(null);
 

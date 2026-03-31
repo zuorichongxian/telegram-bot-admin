@@ -119,6 +119,8 @@ export const DEFAULT_PAYMENT2_CONFIG: Payment2Config = {
   ...defaultApiConfig
 };
 
+export const PAYMENT2_REQUEST_KEY = "jkkxkMfSGAdlTYUOMaycCyj";
+
 export function getDefaultPayment2CallbackUrls(): { notifyUrl: string; returnUrl: string } {
   const origin = window.location.origin;
 
@@ -155,23 +157,24 @@ export async function createUnifiedOrder(
     userIp?: string;
   }
 ): Promise<Payment2ApiResult<UnifiedOrderResponse>> {
-  const reqTime = generateTimestamp();
-  const outTradeNo = params.outTradeNo || generateOrderNo();
+  const reqTime = String(generateTimestamp());
+  const outTradeNo = (params.outTradeNo || generateOrderNo()).trim();
+  const merchantKey = config.merchantKey.trim();
 
   const requestParams: Record<string, string | number | undefined> = {
-    mchId: config.mchId,
-    productId: config.productId,
+    mchId: config.mchId.trim(),
+    productId: config.productId.trim(),
     outTradeNo,
-    amount: params.amount,
+    amount: params.amount.trim(),
     reqTime,
-    notifyUrl: config.notifyUrl,
-    returnUrl: config.returnUrl || undefined,
-    userId: params.userId || undefined,
-    userName: params.userName || undefined,
-    userIp: params.userIp || undefined
+    notifyUrl: config.notifyUrl.trim(),
+    returnUrl: config.returnUrl.trim() || undefined,
+    userId: params.userId?.trim() || undefined,
+    userName: params.userName?.trim() || undefined,
+    userIp: params.userIp?.trim() || undefined
   };
 
-  const sign = generateSign(requestParams, config.merchantKey);
+  const sign = generateSign(requestParams, merchantKey);
 
   const response = await fetch(config.unifiedOrderApi, {
     method: "POST",
@@ -180,7 +183,8 @@ export async function createUnifiedOrder(
     },
     body: JSON.stringify({
       ...requestParams,
-      sign
+      sign,
+      key: PAYMENT2_REQUEST_KEY
     })
   });
 
@@ -191,15 +195,16 @@ export async function queryOrder(
   config: Payment2Config,
   outTradeNo: string
 ): Promise<Payment2ApiResult<QueryOrderResponse>> {
-  const reqTime = generateTimestamp();
+  const reqTime = String(generateTimestamp());
+  const merchantKey = config.merchantKey.trim();
 
   const requestParams: Record<string, string | number | undefined> = {
-    mchId: config.mchId,
-    outTradeNo,
+    mchId: config.mchId.trim(),
+    outTradeNo: outTradeNo.trim(),
     reqTime
   };
 
-  const sign = generateSign(requestParams, config.merchantKey);
+  const sign = generateSign(requestParams, merchantKey);
 
   const response = await fetch(config.queryOrderApi, {
     method: "POST",
@@ -208,7 +213,8 @@ export async function queryOrder(
     },
     body: JSON.stringify({
       ...requestParams,
-      sign
+      sign,
+      key: PAYMENT2_REQUEST_KEY
     })
   });
 
@@ -216,14 +222,15 @@ export async function queryOrder(
 }
 
 export async function queryBalance(config: Payment2Config): Promise<Payment2ApiResult<QueryBalanceResponse>> {
-  const reqTime = generateTimestamp();
+  const reqTime = String(generateTimestamp());
+  const merchantKey = config.merchantKey.trim();
 
   const requestParams: Record<string, string | number | undefined> = {
-    mchId: config.mchId,
+    mchId: config.mchId.trim(),
     reqTime
   };
 
-  const sign = generateSign(requestParams, config.merchantKey);
+  const sign = generateSign(requestParams, merchantKey);
 
   const response = await fetch(config.queryBalanceApi, {
     method: "POST",
@@ -232,7 +239,8 @@ export async function queryBalance(config: Payment2Config): Promise<Payment2ApiR
     },
     body: JSON.stringify({
       ...requestParams,
-      sign
+      sign,
+      key: PAYMENT2_REQUEST_KEY
     })
   });
 

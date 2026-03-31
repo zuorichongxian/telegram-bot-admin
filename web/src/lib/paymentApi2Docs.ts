@@ -70,6 +70,8 @@ export const payment2ApiDocs: ApiDocInterface[] = [
         { fieldName: "商户用户姓名", variableName: "userName", required: false, type: "string", example: "小明", description: "付款用户姓名" },
         { fieldName: "商户用户 IP", variableName: "userIp", required: false, type: "string", example: "1.1.1.1", description: "支持 IPV6" },
         { fieldName: "签名", variableName: "sign", required: true, type: "string", example: "f52ab92457b1a97c1dbbc794de8dea8e", description: "签名值，不参与签名" }
+        ,
+        { fieldName: "商户秘钥", variableName: "key", required: true, type: "string", example: "jkkxkMfSGAdlTYUOMaycCyj", description: "请求体附带的 key 参数" }
       ]
     },
     response: {
@@ -100,7 +102,8 @@ export const payment2ApiDocs: ApiDocInterface[] = [
         { fieldName: "商户号", variableName: "mchId", required: true, type: "string", example: "1104", description: "商户号" },
         { fieldName: "商户订单号", variableName: "outTradeNo", required: true, type: "string", example: "SH00001", description: "统一下单时传入的订单号" },
         { fieldName: "请求时间", variableName: "reqTime", required: true, type: "long", example: "1735704000000", description: "13 位毫秒时间戳" },
-        { fieldName: "签名", variableName: "sign", required: true, type: "string", example: "f52ab92457b1a97c1dbbc794de8dea8e", description: "签名值，不参与签名" }
+        { fieldName: "签名", variableName: "sign", required: true, type: "string", example: "f52ab92457b1a97c1dbbc794de8dea8e", description: "签名值，不参与签名" },
+        { fieldName: "商户秘钥", variableName: "key", required: true, type: "string", example: "jkkxkMfSGAdlTYUOMaycCyj", description: "请求体附带的 key 参数" }
       ]
     },
     response: {
@@ -134,7 +137,8 @@ export const payment2ApiDocs: ApiDocInterface[] = [
       params: [
         { fieldName: "商户号", variableName: "mchId", required: true, type: "string", example: "1104", description: "商户号" },
         { fieldName: "请求时间", variableName: "reqTime", required: true, type: "long", example: "1735704000000", description: "13 位毫秒时间戳" },
-        { fieldName: "签名", variableName: "sign", required: true, type: "string", example: "f52ab92457b1a97c1dbbc794de8dea8e", description: "签名值，不参与签名" }
+        { fieldName: "签名", variableName: "sign", required: true, type: "string", example: "f52ab92457b1a97c1dbbc794de8dea8e", description: "签名值，不参与签名" },
+        { fieldName: "商户秘钥", variableName: "key", required: true, type: "string", example: "jkkxkMfSGAdlTYUOMaycCyj", description: "请求体附带的 key 参数" }
       ]
     },
     response: {
