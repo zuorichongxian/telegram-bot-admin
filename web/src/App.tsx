@@ -1,25 +1,26 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { MetricCard } from "./components/AppPrimitives";
+import { PaymentResultPage } from "./pages/PaymentResultPage";
 import { API_BASE_URL } from "./lib/api";
 import { BotManagementWorkspace } from "./workspaces/BotManagementWorkspace";
+import { PaymentTest2Workspace } from "./workspaces/PaymentTest2Workspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
-import { PaymentResultPage } from "./pages/PaymentResultPage";
-// 。。。
+
 type FlashState = {
   type: "success" | "error";
   message: string;
 };
 
-type WorkspaceTab = "user" | "bot" | "payment";
+type WorkspaceTab = "user" | "bot" | "payment" | "payment2";
 
 const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
     id: "user",
     label: "用户身份",
-    description: "保留现有用户登录、Identity 切换和发消息能力。"
+    description: "保留现有用户登录、Identity 切换和消息发送能力。"
   },
   {
     id: "bot",
@@ -30,6 +31,11 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
     id: "payment",
     label: "拉单测试1",
     description: "支付接口可视化测试工具，支持代收/代付下单和订单查询。"
+  },
+  {
+    id: "payment2",
+    label: "拉单测试2",
+    description: "盛兴通道测试页，支持统一下单、查单、余额查询和回调验签。"
   }
 ];
 
@@ -69,10 +75,10 @@ function MainApp() {
             <div className="max-w-3xl">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">Telegram Admin MVP</p>
               <h1 className="display-font mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-5xl">
-                用网页控制台管理 Telegram 身份和 Bot 资料
+                用网页控制台管理 Telegram 身份、Bot 和支付测试页
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-600 sm:text-base">
-                当前控制台保留原有用户身份工作区，并新增 Bot 管理工作区。Bot 需先通过 @BotFather 创建，再录入
+                当前控制台保留用户身份工作区和 Bot 管理工作区，并新增两套支付测试面板。Bot 需先通过 @BotFather 创建，再录入
                 Token 到系统中。
               </p>
             </div>
@@ -124,8 +130,10 @@ function MainApp() {
           <UserIdentityWorkspace showError={showError} showSuccess={showSuccess} />
         ) : activeTab === "bot" ? (
           <BotManagementWorkspace showError={showError} showSuccess={showSuccess} />
-        ) : (
+        ) : activeTab === "payment" ? (
           <PaymentTestWorkspace showError={showError} showSuccess={showSuccess} />
+        ) : (
+          <PaymentTest2Workspace showError={showError} showSuccess={showSuccess} />
         )}
       </div>
     </div>
