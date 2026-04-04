@@ -8,39 +8,39 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api/payment4-proxy": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment4": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment5-proxy": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment5": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment3-proxy": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment3": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment2-proxy": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment2": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment-proxy": {
-        target: "http://localhost:3001",
+        target: "http://127.0.0.1:3001",
         changeOrigin: true
       },
       "/api/payment": {
