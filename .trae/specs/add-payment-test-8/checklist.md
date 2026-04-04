@@ -82,10 +82,19 @@
   - tabs 定义：label="接单测试8", description="晚州支付通道测试页" ✅
   - 渲染：`activeTab === "payment8"` → `<PaymentTest8Workspace />` ✅
 
-- [ ] **13. 支付通道下拉选择器包含 928/955/973/984/969/983 六个编码及其对应金额选项**
-  - 搜索整个 `web/src/` 目录，**未找到** 928/955/973/984/969/983 任一编码
-  - 当前 PaymentTest8Workspace 的"支付编码"字段为普通文本 Input，**非下拉选择器**
-  - **缺失：通道编码常量/配置数据、下拉选择组件、各编码对应金额选项**
+- [x] **13. 支付通道下拉选择器包含 928/955/973/984/969/983 六个编码及其对应金额选项**
+  - 文件：[paymentApi8.ts#L58-L70](../../web/src/lib/paymentApi8.ts#L58-L70)
+  - `PAYMENT8_CHANNELS` 常量定义了6个通道 ✅
+    - 928: 支付宝生活缴费 (100, 1000元)
+    - 955: 微信生活缴费 (100, 1000元)
+    - 973: 支付宝ios (100, 200元)
+    - 984: 支付宝联通网厅 (50, 100, 200元)
+    - 969: 移动网厅 (50, 100, 200元)
+    - 983: 微信联通网厅 (50, 100, 200元)
+  - 文件：[PaymentTest8Workspace.tsx#L329-L347](../../web/src/workspaces/PaymentTest8Workspace.tsx#L329-L347)
+  - 使用 HeroUI Select 组件实现下拉选择器 ✅
+  - 选择通道后自动设置编码和默认金额 ✅
+  - 金额字段下方显示快捷金额按钮（第395-414行）✅
 
 - [x] **14. 回调地址自动填充为 `/api/payment8/callback`**
   - 文件：[paymentApi8.ts#L122-L129](../../web/src/lib/paymentApi8.ts#L122-L129)
