@@ -84,9 +84,9 @@ export const PAYMENT5_STATE_MAP: Record<number, string> = {
 export function getPayment5ApiConfig(useProxy: boolean): Payment5ApiConfig {
   if (useProxy) {
     return {
-      unifiedOrderApi: "/api/payment5-proxy/pay/index",
-      queryOrderApi: "/api/payment5-proxy/pay/trade_query",
-      queryBalanceApi: "/api/payment5-proxy/user/info"
+      unifiedOrderApi: "/api/payment5-proxy/Pay_Index.html",
+      queryOrderApi: "/api/payment5-proxy/Pay_Trade_query.html",
+      queryBalanceApi: "/api/payment5-proxy/user.html"
     };
   }
 
