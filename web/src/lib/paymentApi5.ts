@@ -1,5 +1,5 @@
 import { md5, sortParams, isProxyApiConfig, maskKey } from "./paymentApi";
-//--
+//---
 export type UnifiedOrderResponse = {
   status: number;
   msg: string;
