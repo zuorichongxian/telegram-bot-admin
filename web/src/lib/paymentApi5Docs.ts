@@ -1,24 +1,5 @@
 import type { ApiDocInterface, ApiDocParam } from "./paymentApiDocs";
 
-const commonResponseParams: ApiDocParam[] = [
-  {
-    fieldName: "状态码",
-    variableName: "status",
-    required: true,
-    type: "int",
-    example: "1",
-    description: "1=成功，其余为失败"
-  },
-  {
-    fieldName: "状态信息",
-    variableName: "msg",
-    required: true,
-    type: "string",
-    example: "下单成功",
-    description: "具体错误原因或成功提示"
-  }
-];
-
 export const payment5InterfaceRules = [
   { name: "请求方式", value: "POST / form-data" },
   { name: "字符编码", value: "UTF-8" },

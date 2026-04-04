@@ -197,7 +197,7 @@ export async function clearPaymentCallbacks(): Promise<ApiResult<null>> {
   return response.json();
 }
 
-function md5(message: string): string {
+export function md5(message: string): string {
   // 纯 JavaScript MD5 实现，避免浏览器 crypto.subtle 兼容性问题
   function rotateLeft(lValue: number, iShiftBits: number): number {
     return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));

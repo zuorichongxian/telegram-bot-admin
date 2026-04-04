@@ -5,6 +5,7 @@ export type ApiDocParam = {
   type: string;
   example: string;
   description: string;
+  sign?: boolean;
 };
 
 export type ApiDocSection = {
