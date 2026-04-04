@@ -15,6 +15,14 @@ export default defineConfig({
         target: "http://localhost:3001",
         changeOrigin: true
       },
+      "/api/payment5-proxy": {
+        target: "http://localhost:3001",
+        changeOrigin: true
+      },
+      "/api/payment5": {
+        target: "http://localhost:3001",
+        changeOrigin: true
+      },
       "/api/payment3-proxy": {
         target: "http://localhost:3001",
         changeOrigin: true

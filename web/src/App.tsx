@@ -49,6 +49,11 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
     id: "payment4",
     label: "接单测试4",
     description: "鲨鱼支付通道测试页，支持下单、旧/新查单、回调验签和文档查看。"
+  },
+  {
+    id: "payment5",
+    label: "接单测试5",
+    description: "繁星支付通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
   }
 ];
 
@@ -149,6 +154,10 @@ function MainApp() {
           <PaymentTest2Workspace showError={showError} showSuccess={showSuccess} />
         ) : activeTab === "payment3" ? (
           <PaymentTest3Workspace showError={showError} showSuccess={showSuccess} />
+        ) : activeTab === "payment4" ? (
+          <PaymentTest4Workspace showError={showError} showSuccess={showSuccess} />
+        ) : activeTab === "payment5" ? (
+          <PaymentTest5Workspace showError={showError} showSuccess={showSuccess} />
         ) : (
           <PaymentTest4Workspace showError={showError} showSuccess={showSuccess} />
         )}
