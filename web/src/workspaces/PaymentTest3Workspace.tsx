@@ -196,9 +196,10 @@ export function PaymentTest3Workspace({ showSuccess, showError }: PaymentTest3Wo
     setOrderResult(null);
 
     try {
+      const requestOrderId = orderForm.orderId.trim() || generateOrderNo();
       const result = await createPayment3Order(config, {
         price: orderForm.price.trim(),
-        orderId: orderForm.orderId.trim() || undefined,
+        orderId: requestOrderId,
         clientIp: orderForm.clientIp.trim() || undefined,
         clientType: orderForm.clientType.trim() || undefined,
         goodDescribe: orderForm.goodDescribe.trim() || undefined,
@@ -209,10 +210,8 @@ export function PaymentTest3Workspace({ showSuccess, showError }: PaymentTest3Wo
       addLog("订单支付", orderForm, result);
 
       if (result.code === 0 && result.success) {
-        const latestOrderId = orderForm.orderId.trim() || undefined;
-        if (latestOrderId) {
-          setQueryForm({ orderId: latestOrderId });
-        }
+        setOrderForm((prev) => ({ ...prev, orderId: requestOrderId }));
+        setQueryForm({ orderId: requestOrderId });
         showSuccess(`订单支付成功，平台订单号：${result.data?.ptOrderNum ?? "-"}`);
       } else {
         showError(new Error(result.message || "订单支付失败"));
