@@ -84,9 +84,9 @@ export const PAYMENT7_STATE_MAP: Record<number, string> = {
 export function getPayment7ApiConfig(useProxy: boolean): Payment7ApiConfig {
   if (useProxy) {
     return {
-      unifiedOrderApi: "/api/payment7-proxy/Pay_Index.html",
-      queryOrderApi: "/api/payment7-proxy/Pay_Trade_query.html",
-      queryBalanceApi: "/api/payment7-proxy/user.html"
+      unifiedOrderApi: "/api/payment5-proxy/Pay_Index.html",
+      queryOrderApi: "/api/payment5-proxy/Pay_Trade_query.html",
+      queryBalanceApi: "/api/payment5-proxy/user.html"
     };
   }
 
@@ -123,7 +123,7 @@ export function getDefaultPayment7CallbackUrls(): { notifyUrl: string; returnUrl
   const origin = window.location.origin;
 
   return {
-    notifyUrl: `${origin}/api/payment7/callback`,
+    notifyUrl: `${origin}/api/payment5/callback`,
     returnUrl: ""
   };
 }
@@ -239,12 +239,12 @@ export async function queryBalance(config: Payment7Config): Promise<Payment7ApiR
 }
 
 export async function fetchPayment7Callbacks(limit = 50): Promise<CallbackResponse<Payment7Callback[]>> {
-  const response = await fetch(`/api/payment7/callbacks?limit=${limit}`);
+  const response = await fetch(`/api/payment5/callbacks?limit=${limit}`);
   return response.json();
 }
 
 export async function clearPayment7Callbacks(): Promise<CallbackResponse<null>> {
-  const response = await fetch("/api/payment7/callbacks", {
+  const response = await fetch("/api/payment5/callbacks", {
     method: "DELETE"
   });
 

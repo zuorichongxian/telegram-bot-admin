@@ -12,8 +12,8 @@
   - [x] 3.1 创建 `server/src/routes/payment8ProxyRoutes.ts`，配置代理中间件转发到 cdnapi.hnqo.xyz
   - [x] 3.2 创建 `server/src/routes/payment8CallbackRoutes.ts`，定义回调相关路由
 
-- [ ] Task 4: 注册后端路由到服务器入口
-  - [ ] 4.1 修改 `server/src/app.ts`，注册 payment8 路由和代理中间件
+- [x] Task 4: 注册后端路由到服务器入口
+  - [x] 4.1 修改 `server/src/app.ts`，注册 payment8 路由和代理中间件
 
 - [x] Task 5: 创建前端 API 层
   - [x] 5.1 创建 `web/src/lib/paymentApi8.ts`，包含类型定义、默认配置、API 请求函数（统一下单、订单查询、余额查询、回调记录）
@@ -24,9 +24,9 @@
 - [ ] Task 7: 创建前端工作区组件
   - [ ] 7.1 创建 `web/src/workspaces/PaymentTest8Workspace.tsx`，实现完整 UI（配置面板、统一下单、订单查询、余额查询、回调记录、操作日志、接口文档）
 
-- [ ] Task 8: 配置前端构建和路由
-  - [ ] 8.1 修改 `web/vite.config.ts`，新增 `/api/payment8-proxy` 和 `/api/payment8` 代理规则
-  - [ ] 8.2 修改 `web/src/App.tsx`，新增"接单测试8"标签页和路由
+- [x] Task 8: 配置前端构建和路由
+  - [x] 8.1 修改 `web/vite.config.ts`，新增 `/api/payment8-proxy` 和 `/api/payment8` 代理规则
+  - [x] 8.2 修改 `web/src/App.tsx`，新增"接单测试8"标签页和路由
 
 # Task Dependencies
 - [Task 2] depends on [Task 1]

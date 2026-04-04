@@ -62,12 +62,14 @@ export function createApp() {
   app.use(payment4CallbackRouter);
   app.use(payment5CallbackRouter);
   app.use(payment6CallbackRouter);
+  app.use(payment8CallbackRouter);
   app.use("/api/payment-proxy", paymentProxy);
   app.use("/api/payment2-proxy", payment2Proxy);
   app.use("/api/payment3-proxy", payment3Proxy);
   app.use("/api/payment4-proxy", payment4Proxy);
   app.use("/api/payment5-proxy", payment5Proxy);
   app.use("/api/payment6-proxy", payment6Proxy);
+  app.use("/api/payment8-proxy", payment8Proxy);
 
   if (hasBuiltWeb) {
     app.use(express.static(webDistDir));
