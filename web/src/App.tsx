@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { MetricCard } from "./components/AppPrimitives";
@@ -8,6 +8,7 @@ import { BotManagementWorkspace } from "./workspaces/BotManagementWorkspace";
 import { PaymentTest2Workspace } from "./workspaces/PaymentTest2Workspace";
 import { PaymentTest3Workspace } from "./workspaces/PaymentTest3Workspace";
 import { PaymentTest4Workspace } from "./workspaces/PaymentTest4Workspace";
+import { PaymentTest5Workspace } from "./workspaces/PaymentTest5Workspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
 
@@ -16,7 +17,7 @@ type FlashState = {
   message: string;
 };
 
-type WorkspaceTab = "user" | "bot" | "payment" | "payment2" | "payment3" | "payment4";
+type WorkspaceTab = "user" | "bot" | "payment" | "payment2" | "payment3" | "payment4" | "payment5";
 
 const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
