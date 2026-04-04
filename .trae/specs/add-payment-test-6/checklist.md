@@ -1,0 +1,11 @@
+- [ ] 后端 payment6Sign.ts 导出 DEFAULT_PAYMENT6_MERCHANT_KEY 和 verifyPayment6Sign 函数
+- [ ] 后端 Payment6CallbackService.ts 包含 create/findAll/deleteAll 方法，操作 payment6_callbacks 表
+- [ ] 数据库中存在 payment6_callbacks 表（结构同 payment2_callbacks）
+- [ ] 后端 payment6ProxyRoutes.ts 代理转发至 https://jkapi-wansheng.douyaya.com 并重写签名
+- [ ] 后端 payment6CallbackController.ts 实现回调接收、验签（MD5）、记录、GET 查询、DELETE 清空
+- [ ] 后端 payment6CallbackRoutes.ts 正确挂载 /payment6/callback, /payment6/callbacks 路由
+- [ ] server/src/app.ts 已注册 payment6CallbackRouter 和 /api/payment6-proxy 代理
+- [ ] 前端 paymentApi6.ts 包含完整类型定义和 API 函数（createUnifiedOrder/queryOrder/queryBalance/callbacks）
+- [ ] 前端 paymentApi6Docs.ts 包含统一下单、查询订单、余额查询、支付通知四个接口文档
+- [ ] 前端 PaymentTest6Workspace.tsx 包含配置面板、下单表单、查单表单、余额查询、回调记录、操作日志、文档面板
+- [ ] App.tsx 新增 payment6 Tab（标签"接单测试6"）并渲染 PaymentTest6Workspace

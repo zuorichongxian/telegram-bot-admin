@@ -19,6 +19,8 @@ import { payment4CallbackRouter } from "./routes/payment4CallbackRoutes.js";
 import { payment4Proxy } from "./routes/payment4ProxyRoutes.js";
 import { payment5CallbackRouter } from "./routes/payment5CallbackRoutes.js";
 import { payment5Proxy } from "./routes/payment5ProxyRoutes.js";
+import { payment6CallbackRouter } from "./routes/payment6CallbackRoutes.js";
+import { payment6Proxy } from "./routes/payment6ProxyRoutes.js";
 import { paymentCallbackRouter } from "./routes/paymentCallbackRoutes.js";
 import { paymentProxy } from "./routes/paymentProxyRoutes.js";
 import { sessionRouter } from "./routes/sessionRoutes.js";
@@ -57,11 +59,13 @@ export function createApp() {
   app.use(payment3CallbackRouter);
   app.use(payment4CallbackRouter);
   app.use(payment5CallbackRouter);
+  app.use(payment6CallbackRouter);
   app.use("/api/payment-proxy", paymentProxy);
   app.use("/api/payment2-proxy", payment2Proxy);
   app.use("/api/payment3-proxy", payment3Proxy);
   app.use("/api/payment4-proxy", payment4Proxy);
   app.use("/api/payment5-proxy", payment5Proxy);
+  app.use("/api/payment6-proxy", payment6Proxy);
 
   if (hasBuiltWeb) {
     app.use(express.static(webDistDir));
