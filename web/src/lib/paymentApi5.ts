@@ -91,9 +91,9 @@ export function getPayment5ApiConfig(useProxy: boolean): Payment5ApiConfig {
   }
 
   return {
-    unifiedOrderApi: "http://hh74.fanxingpay.sgjtpay.com/Pay_Index.html",
-    queryOrderApi: "http://hh74.fanxingpay.sgjtpay.com/Pay_Trade_query.html",
-    queryBalanceApi: "http://hh74.fanxingpay.sgjtpay.com/user.html"
+    unifiedOrderApi: "http://test.demo.sanguozf.com/Pay_Index.html",
+    queryOrderApi: "http://test.demo.sanguozf.com/Pay_Trade_query.html",
+    queryBalanceApi: "http://test.demo.sanguozf.com/user.html"
   };
 }
 

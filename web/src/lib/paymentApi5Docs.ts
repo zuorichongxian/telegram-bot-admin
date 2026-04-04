@@ -54,7 +54,7 @@ export const payment5SignRules = [
 export const payment5ApiDocs: ApiDocInterface[] = [
   {
     name: "统一下单",
-    url: "http://hh74.fanxingpay.sgjtpay.com/Pay_Index.html",
+    url: "http://test.demo.sanguozf.comIndex.html",
     method: "POST",
     description: "发起支付收款订单，网关返回支付地址给商户展示。",
     request: {
@@ -91,7 +91,7 @@ export const payment5ApiDocs: ApiDocInterface[] = [
   },
   {
     name: "查询订单",
-    url: "http://hh74.fanxingpay.sgjtpay.com/Pay_Trade_query.html",
+    url: "http://test.demo.sanguozf.comTrade_query.html",
     method: "POST",
     description: "查询订单最新状态与支付结果。",
     request: {

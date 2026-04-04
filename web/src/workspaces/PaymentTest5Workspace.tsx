@@ -352,7 +352,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
 
           <div className="rounded-[24px] border border-dashed border-stone-300 bg-white/70 p-4 text-sm leading-7 text-stone-600">
             <p><strong>商户名称：</strong><span className="ml-2">游戏城</span></p>
-            <p><strong>商户后台：</strong><span className="ml-2 break-all">http://hh74.fanxingpay.sgjtpay.com/user.html</span></p>
+            <p><strong>商户后台：</strong><span className="ml-2 break-all">http://test.demo.sanguozf.com.html</span></p>
             <p><strong>登录账号：</strong><span className="ml-2">游戏城</span></p>
             <p><strong>商务号：</strong><span className="ml-2">260505221</span></p>
             <p><strong>当前密钥预览：</strong><span className="ml-2 font-mono">{maskKey(config.merchantKey)}</span></p>

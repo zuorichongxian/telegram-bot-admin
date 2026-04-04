@@ -30,7 +30,7 @@ function rewritePayment5Sign(req: Request) {
 }
 
 export const payment5Proxy = createProxyMiddleware({
-  target: "http://hh74.fanxingpay.sgjtpay.com",
+  target: "http://test.demo.sanguozf.com
   changeOrigin: true,
   proxyTimeout: 15000,
   timeout: 20000,
