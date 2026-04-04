@@ -10,6 +10,7 @@ import { PaymentTest3Workspace } from "./workspaces/PaymentTest3Workspace";
 import { PaymentTest4Workspace } from "./workspaces/PaymentTest4Workspace";
 import { PaymentTest5Workspace } from "./workspaces/PaymentTest5Workspace";
 import { PaymentTest6Workspace } from "./workspaces/PaymentTest6Workspace";
+import { PaymentTest7Workspace } from "./workspaces/PaymentTest7Workspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
 
@@ -18,7 +19,7 @@ type FlashState = {
   message: string;
 };
 
-type WorkspaceTab = "user" | "bot" | "payment" | "payment2" | "payment3" | "payment4" | "payment5" | "payment6";
+type WorkspaceTab = "user" | "bot" | "payment" | "payment2" | "payment3" | "payment4" | "payment5" | "payment6" | "payment7";
 
 const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
@@ -60,6 +61,11 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
     id: "payment6",
     label: "接单测试6",
     description: "万盛通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
+  },
+  {
+    id: "payment7",
+    label: "接单测试7",
+    description: "金安支付通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
   }
 ];
 
@@ -166,6 +172,8 @@ function MainApp() {
           <PaymentTest5Workspace showError={showError} showSuccess={showSuccess} />
         ) : activeTab === "payment6" ? (
           <PaymentTest6Workspace showError={showError} showSuccess={showSuccess} />
+        ) : activeTab === "payment7" ? (
+          <PaymentTest7Workspace showError={showError} showSuccess={showSuccess} />
         ) : (
           <PaymentTest4Workspace showError={showError} showSuccess={showSuccess} />
         )}

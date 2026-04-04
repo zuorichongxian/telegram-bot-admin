@@ -1,0 +1,8 @@
+- [ ] paymentApi7.ts 文件已创建，包含完整的类型定义、默认配置（商务号260506688、秘钥7pcgb193qvmd0oqmxxrjg4ude5l0cxtf）和 API 函数
+- [ ] paymentApi7Docs.ts 文件已创建，包含接口文档、签名规则和状态码说明
+- [ ] PaymentTest7Workspace.tsx 组件已创建，包含完整的UI结构（配置面板、统一下单、订单查询、余额查询、回调记录、操作日志、接口文档）
+- [ ] 统一下单表单包含固定面额快捷选项（50元、100元、200元）
+- [ ] App.tsx 已正确导入并注册 PaymentTest7Workspace 组件
+- [ ] App.tsx 的标签页数组包含"接单测试7"选项卡
+- [ ] App.tsx 的路由渲染逻辑正确处理 payment7 分支
+- [ ] 所有导入路径正确，无 TypeScript 编译错误

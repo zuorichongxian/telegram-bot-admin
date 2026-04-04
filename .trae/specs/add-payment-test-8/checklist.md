@@ -1,0 +1,14 @@
+- [ ] 后端签名工具 `payment8Sign.ts` 实现了 MD5 签名生成与验证功能
+- [ ] 数据库 `payment8_callbacks` 表创建成功，包含所有必需字段和索引
+- [ ] `Payment8CallbackService.ts` 实现了回调记录的增删查操作
+- [ ] `payment8CallbackController.ts` 正确处理回调请求、查询、清空逻辑
+- [ ] `payment8ProxyRoutes.ts` 代理配置正确转发到 cdnapi.hnqo.xyz
+- [ ] `payment8CallbackRoutes.ts` 路由定义完整（POST callback, GET callbacks, DELETE callbacks）
+- [ ] `server/src/app.ts` 成功注册 payment8 路由和代理中间件
+- [ ] 前端 `paymentApi8.ts` 包含完整的类型定义、默认配置（商户号260452181、密钥cbiledn772wiz4w26yu4pk5u9gw21yx9）和 API 函数
+- [ ] 前端 `paymentApi8Docs.ts` 包含接口文档数据（6个支付通道编码及金额限制）
+- [ ] 前端 `PaymentTest8Workspace.tsx` UI 组件完整，包含配置面板、统一下单、订单查询、余额查询、回调记录、操作日志、接口文档
+- [ ] Vite 配置新增 `/api/payment8-proxy` 和 `/api/payment8` 代理规则
+- [ ] App.tsx 新增"接单测试8"标签页和路由配置正确
+- [ ] 支付通道下拉选择器包含 928/955/973/984/969/983 六个编码及其对应金额选项
+- [ ] 回调地址自动填充为 `/api/payment8/callback`
