@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>èèé²¨ææ¯æ¯æ</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="../res/layui/css/layui.css" rel="stylesheet">
+  <script>
+    if(!/^http(s*):\/\//.test(location.href)){
+      alert('è¯·éè¿ localhost è®¿é®');
+    }
+  </script>
+</head>
+<body>
+  <div id="LAY_app"></div>
+  <script src="../res/layui/layui.js"></script>
+  <script>
+  layui.config({
+    base: '../res/', // éæèµæºæå¨è·¯å¾
+    version:  '2.1.0'
+  }).use('index', function(){
+    var layer = layui.layer;
+    var admin = layui.admin;
+    function isMobile() {
+      let flag = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      return flag;
+    }
+
+    var width ;
+    if (isMobile()) {
+      width = screen.width
+    } else {
+      width = '1200'
+    }
+    admin.width = width
+
+  });
+  </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"8cbd33c9ca474302a35fab484eb976a7","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+

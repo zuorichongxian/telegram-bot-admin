@@ -136,6 +136,18 @@ class DatabaseManager {
         created_at TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS payment4_callbacks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        merchant_id TEXT NOT NULL,
+        order_id TEXT NOT NULL,
+        amount TEXT NOT NULL,
+        status TEXT NOT NULL,
+        sign TEXT NOT NULL,
+        raw_data TEXT NOT NULL,
+        verified INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+      );
+
       CREATE UNIQUE INDEX IF NOT EXISTS idx_bots_bot_user_id ON bots (bot_user_id);
       CREATE INDEX IF NOT EXISTS idx_payment_callbacks_merchant_order_no ON payment_callbacks (merchant_order_no);
       CREATE INDEX IF NOT EXISTS idx_payment_callbacks_created_at ON payment_callbacks (created_at);
@@ -143,6 +155,8 @@ class DatabaseManager {
       CREATE INDEX IF NOT EXISTS idx_payment2_callbacks_created_at ON payment2_callbacks (created_at);
       CREATE INDEX IF NOT EXISTS idx_payment3_callbacks_order_id ON payment3_callbacks (order_id);
       CREATE INDEX IF NOT EXISTS idx_payment3_callbacks_created_at ON payment3_callbacks (created_at);
+      CREATE INDEX IF NOT EXISTS idx_payment4_callbacks_order_id ON payment4_callbacks (order_id);
+      CREATE INDEX IF NOT EXISTS idx_payment4_callbacks_created_at ON payment4_callbacks (created_at);
     `);
 
     this.database.run(
