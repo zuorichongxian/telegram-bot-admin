@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Input } from "@heroui/react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Input, Select, SelectItem } from "@heroui/react";
 
 import { Field, formatDate } from "../components/AppPrimitives";
 import { ApiDocPanel, ApiDocSelector } from "../components/ApiDocPanel";
@@ -19,12 +19,14 @@ import {
   isProxyPayment8ApiConfig,
   isValidFenAmount,
   maskKey,
+  PAYMENT8_CHANNELS,
   PAYMENT8_STATE_MAP,
   queryBalance,
   queryOrder,
   type Payment8ApiResult,
   type Payment8Callback,
   type Payment8Config,
+  type PaymentChannel,
   type QueryBalanceResponse,
   type QueryOrderResponse,
   type UnifiedOrderResponse
@@ -79,6 +81,7 @@ export function PaymentTest8Workspace({ showSuccess, showError }: PaymentTest8Wo
     })
   );
   const [showKey, setShowKey] = useState(false);
+  const [selectedChannel, setSelectedChannel] = useState<PaymentChannel | null>(null);
   const [orderForm, setOrderForm] = useState({
     amount: "100",
     outTradeNo: "",
@@ -322,8 +325,26 @@ export function PaymentTest8Workspace({ showSuccess, showError }: PaymentTest8Wo
                 </button>
               </div>
             </Field>
-            <Field label="支付编码">
-              <Input value={config.productId} onChange={(e) => updateConfig("productId", e.currentTarget.value)} />
+            <Field label="支付通道">
+              <Select
+                placeholder="选择支付通道"
+                selectedKeys={selectedChannel ? [selectedChannel.code] : []}
+                onChange={(e) => {
+                  const code = e.target.value;
+                  const channel = PAYMENT8_CHANNELS.find(c => c.code === code);
+                  setSelectedChannel(channel || null);
+                  if (channel) {
+                    updateConfig("productId", channel.code);
+                    updateOrderForm("amount", String(channel.amounts[0]));
+                  }
+                }}
+              >
+                {PAYMENT8_CHANNELS.map((channel) => (
+                  <SelectItem key={channel.code} textValue={channel.name}>
+                    {channel.name} ({channel.code})
+                  </SelectItem>
+                ))}
+              </Select>
             </Field>
             <Field label="异步通知地址">
               <Input value={config.notifyUrl} onChange={(e) => updateConfig("notifyUrl", e.currentTarget.value)} placeholder="https://example.com/notify" />
@@ -371,6 +392,24 @@ export function PaymentTest8Workspace({ showSuccess, showError }: PaymentTest8Wo
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="支付金额（元）">
                   <Input value={orderForm.amount} onChange={(e) => updateOrderForm("amount", e.currentTarget.value)} placeholder="100" />
+                  {selectedChannel && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedChannel.amounts.map((amt) => (
+                        <button
+                          key={amt}
+                          className={`rounded-xl px-3 py-1 text-xs font-medium transition ${
+                            orderForm.amount === String(amt)
+                              ? "bg-stone-900 text-white"
+                              : "border border-stone-300 bg-white text-stone-700 hover:bg-stone-50"
+                          }`}
+                          type="button"
+                          onClick={() => updateOrderForm("amount", String(amt))}
+                        >
+                          {amt} 元
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </Field>
                 <Field label="商户订单号">
                   <div className="flex gap-2">

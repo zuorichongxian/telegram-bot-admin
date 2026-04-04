@@ -55,6 +55,21 @@ export type Payment8Callback = {
   created_at: string;
 };
 
+export type PaymentChannel = {
+  code: string;
+  name: string;
+  amounts: number[];
+};
+
+export const PAYMENT8_CHANNELS: PaymentChannel[] = [
+  { code: "928", name: "支付宝生活缴费", amounts: [100, 1000] },
+  { code: "955", name: "微信生活缴费", amounts: [100, 1000] },
+  { code: "973", name: "支付宝ios", amounts: [100, 200] },
+  { code: "984", name: "支付宝联通网厅", amounts: [50, 100, 200] },
+  { code: "969", name: "移动网厅", amounts: [50, 100, 200] },
+  { code: "983", name: "微信联通网厅", amounts: [50, 100, 200] }
+];
+
 export type Payment8Config = {
   mchId: string;
   merchantKey: string;
