@@ -12,7 +12,6 @@ import {
   createUnifiedOrder,
   DEFAULT_PAYMENT5_CONFIG,
   fetchPayment5Callbacks,
-  formatFenToYuan,
   generateOrderNo,
   getDefaultPayment5CallbackUrls,
   getPayment5ApiConfig,

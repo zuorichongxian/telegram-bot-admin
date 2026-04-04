@@ -1,4 +1,4 @@
-import type { ApiDocInterface, ApiDocParam } from "./paymentApiDocs";
+import type { ApiDocInterface } from "./paymentApiDocs";
 
 export const payment5InterfaceRules = [
   { name: "请求方式", value: "POST / form-data" },
