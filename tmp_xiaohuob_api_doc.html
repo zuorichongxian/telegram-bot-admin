@@ -1,150 +1,0 @@
-﻿
-
-
-
-
-
-<h1 align="center">é²¨é±¼æ¯ä»ç³»ç»</h1>
-
-
-
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend>å¬å±ç­¾åè§å</legend>
-</fieldset>
-
-
-
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    ææè¯·æ±åæ°å»é¤ç©ºå¼åæç§ASCII ç çååºè¿è¡æåºï¼æç§key1=value1&key2=value2è¿è¡ç»åï¼æåå ä¸åæ·ç§é¥ï¼&key=åæ·ç§é¥ï¼,è¿è¡md5è¿ç®,ç»æè½¬ä¸ºå°å
-
-    function($data, $signkey){
-        $data = array_filter($data); //å»ç©º
-        ksort($data); //æåº
-        $tmp_string = http_build_query($data); //è¿è¡é®å¼å¯¹æå  a=1&b=2&c=3
-        $tmp_string = urldecode($tmp_string); //åæ°æ éè¿è¡urlencode ,ä¸ä¸æ­¥è¿è¡äºurlencode,è¿éè¿åä¸ä¸
-        return md5( $tmp_string .'&key='. $signkey );  //ç­¾åçæ
-    }
-</pre>
-
-
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend><b>ä¸åæ¥å£</b>:ç½å³åå/api/newOrder</legend>
-</fieldset>
-
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    --------------------------------------------------------------------------------------------------------------
-    <h3>å¿å¡«åæ°</h3>
-    merchantId    åæ·å·:åæ·åå°æ¥ç
-    orderId       åæ·è®¢åå·:è®¢åé¿åº¦10-50ä½;å¯ä¼ å­æ¯ææ°å­;åºç¡®ä¿è®¢åå·å¯ä¸æ§
-    orderAmount   è®¢åéé¢:åä½å,å¯ä¸ºæ´æ°,ä¹å¯æå¤ä¿ç2ä½å°æ°
-    channelType   ééç¼å·:åæ·åå°æ¥ç
-    notifyUrl     å¼æ­¥éç¥å°å:è®¢åæååä¼éç¥æ­¤å°å
-    sign          ç­¾å:è§å¬å±ç­¾åè§å
-    <h3>å¯å¿½ç¥åæ°</h3>
-    returnUrl     åæ­¥è·³è½¬å°å:ç»ç«¯ç©å®¶å®ææ¯ä»å,ä¼è·³è½¬å°è¿ä¸ªé¡µé¢,å¦ä¸ä¼ åä½¿ç¨ææ¹é»è®¤æ¯ä»æåé¡µé¢
-    isForm        è¯·æ±æå¾ç»æ:å¡«1,åç´æ¥ä½¿ç¨formè¡¨åè·³è½¬è³æ¶é¶å°é¡µé¢å®ææ¯ä»,å¡«2,åè¿åjsonæ°æ®,éé¢åå«æ¶é¶å°æ¯ä»é¾æ¥; é»è®¤å¼:2
-    payer_ip      ç»ç«¯ä¼åip
-    payer_id      ç»ç«¯ä¼åç¼å·
-    order_title   è®¢åæ é¢
-    order_body    è®¢åæè¿°
-
-    --------------------------------------------------------------------------------------------------------------
-
-    <h3>ä¸åååº</h3>
-    code 500:ä¸åå¤±è´¥; 200:ä¸åæå
-    msg  ä¸­ææè¿° å¦:ä¸åæå!
-    data json Object =>  {payUrl:'http://www.baidu.com'}
-    ç¤ºä¾:
-</pre>
-
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend><b>æ¥åæ¥å£</b>:ç½å³åå/api/queryOrderV2</legend>
-</fieldset>
-
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    <h3>å¿å¡«åæ°</h3>
-    merchantId    åæ·å·:åæ·åå°æ¥ç
-    orderId       åæ·è®¢åå·:è®¢åé¿åº¦10-50ä½;å¯ä¼ å­æ¯ææ°å­;åºç¡®ä¿è®¢åå·å¯ä¸æ§
-    sign          ç­¾å:è§å¬å±ç­¾åè§å
-    ------------------------------------------------------------------------------------------------------------
-    <h3>æ¥è¯¢æ¥å£ååºç¤ºä¾</h3>
-    {"code":200,"msg":"æ¥è¯¢æå","data":{"merchantId":"10086","orderId":"202021231231231","status":'paid', "amount":"500", "msg":"å·²æ¯ä»","sign":"598bcf4b666e4f413d10a77cf78e2cfb"}}
-    code 500 æ¥è¯¢å¼å¸¸; 200:æ¥è¯¢æå  æ­¤å¤çåªä»£è¡¨æ¥è¯¢æä½æå,ä¸ä»£è¡¨è®¢åæå
-    msg ä¸­ææè¿° å¦:æ¥è¯¢æå
-    data  {  merchantId:åæ·å·  orderId:åæ·è®¢åå·  status:è®¢åç¶æç   "amount":"500" msg:è®¢åç¶ææè¿°   sign:ç­¾å }
-    <b>æ³¨æï¼è¯·ä¸å®ç¥æ,dataå­æ®µåçç¶æç ææ¯è®¢åçæ¯ä»ç¶æï¼</b>
-    data->status å­æ®µå¼ä¸º paidæ¶ æè¡¨ç¤ºè®¢åå·²æ¯ä» æªæ¯ä»ç¶æå¼æ¯  unpaid
-</pre>
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend><b>å¼æ­¥éç¥</b>:POSTè¡¨å</legend>
-</fieldset>
-
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    è®¢åå®ææ¯ä»å,ä¸åæ¥å£éé¢çå¼æ­¥éç¥å°åä¼æ¶å°æå¡å¨ç¹å¯¹ç¹éç¥ã
-    è¯·æ±æ¹å¼  post application/x-www-form-urlencoded
-    <b>éç¥åæ°</b>
-    merchantId  åæ·å·
-    orderId     åæ·è®¢åå·
-    amount      è®¢åéé¢
-    status      è®¢åç¶æ è®¢åå·²æ¯ä»æä¼åè°,æ­¤åæ°å¼åºå®ä¸º ok
-    sign        åè°ç­¾å
-
-    æ³¨æï¼æ¶å°ææ¹åè°éç¥å,è¯·è¿åå°åè±æå­ç¬¦ä¸² okæsuccess  å¦åææ¹å°æä¸å®é¢çéå¤éç¥è¥å¹²æ¬¡
-</pre>
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend><b>åæ­¥è·³è½¬</b>:GETè¯·æ±</legend>
-</fieldset>
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    è®¢åå®ææ¯ä»å,å¦ææ¨ä¼ éäºæ¯ä»æååçè·³è½¬å°å,ä¸ééç³»ç»æ¯æåæ­¥è·³è½¬,åä»æ¬¾ç¨æ·ä¼è¢«å¼å¯¼è³æ¨ä¼ éè¿æ¥çè·³è½¬å°å,åæ°åå¼æ­¥åè°åæ°,ä½æ¯è¯·æ±æ¹å¼æ¯GETè¯·æ±ã
-</pre>
-
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend><b>åæ·ä½é¢æ¥è¯¢æ¥å£</b>:ç½å³åå/api/queryBalance</legend>
-</fieldset>
-
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    <h3>å¿å¡«åæ°</h3>
-    merchantId    åæ·å·:åæ·åå°æ¥ç
-    sign          ç­¾å:è§å¬å±ç­¾åè§å
-    ------------------------------------------------------------------------------------------------------------
-    <h3>æ¥è¯¢æ¥å£ååºç¤ºä¾</h3>
-    {"code":200,"msg":"æ¥è¯¢æå","data":{"merchantId":"10086","balance":"888888","sign":"598bcf4b666e4f413d10a77cf78e2cfb"}}
-    code 500 æ¥è¯¢å¼å¸¸; 200:æ¥è¯¢æå
-    msg ä¸­ææè¿° å¦:æ¥è¯¢æå
-</pre>
-
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend><b>æ¥åæ¥å£(æ§)</b>:ç½å³åå/api/queryOrder</legend>
-    <b>è¿ä¸ªæ¥åæ¥å£è¯·æ±åæ°åä¸é¢çæ å¼,åªæ¯ä¸è¿åamountå­æ®µ,åå²æ¥å£,æ°å¯¹æ¥è¯·æ¨æ è§</b>
-</fieldset>
-
-<pre class="layui-code" lay-title="PHP" lay-skin="notepad">
-    <h3>å¿å¡«åæ°</h3>
-    merchantId    åæ·å·:åæ·åå°æ¥ç
-    orderId       åæ·è®¢åå·:è®¢åé¿åº¦10-50ä½;å¯ä¼ å­æ¯ææ°å­;åºç¡®ä¿è®¢åå·å¯ä¸æ§
-    sign          ç­¾å:è§å¬å±ç­¾åè§å
-    ------------------------------------------------------------------------------------------------------------
-    <h3>æ¥è¯¢æ¥å£ååºç¤ºä¾</h3>
-    {"code":200,"msg":"æ¥è¯¢æå","data":{"merchantId":"10086","orderId":"202021231231231","status":'paid',"msg":"å·²æ¯ä»","sign":"598bcf4b666e4f413d10a77cf78e2cfb"}}
-    code 500 æ¥è¯¢å¼å¸¸; 200:æ¥è¯¢æå  æ­¤å¤çåªä»£è¡¨æ¥è¯¢æä½æå,ä¸ä»£è¡¨è®¢åæå
-    msg ä¸­ææè¿° å¦:æ¥è¯¢æå
-    data  {  merchantId:åæ·å·  orderId:åæ·è®¢åå·  status:è®¢åç¶æç  msg:è®¢åç¶ææè¿°   sign:ç­¾å }
-    <b>æ³¨æï¼è¯·ä¸å®ç¥æ,dataå­æ®µåçç¶æç ææ¯è®¢åçæ¯ä»ç¶æï¼</b>
-    data->status å­æ®µå¼ä¸º paidæ¶ æè¡¨ç¤ºè®¢åå·²æ¯ä» æªæ¯ä»ç¶æå¼æ¯  unpaid
-</pre>
-
-
-<script>
-    document.title = 'é²¨é±¼æ¯ä»ç³»ç»'
-    layui.use('code', function(){
-        layui.code();
-    });
-</script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"8cbd33c9ca474302a35fab484eb976a7","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-

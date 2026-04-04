@@ -7,6 +7,14 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      "/api/payment4-proxy": {
+        target: "http://localhost:3001",
+        changeOrigin: true
+      },
+      "/api/payment4": {
+        target: "http://localhost:3001",
+        changeOrigin: true
+      },
       "/api/payment3-proxy": {
         target: "http://localhost:3001",
         changeOrigin: true
