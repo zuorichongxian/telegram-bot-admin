@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Input, Select, SelectItem } from "@heroui/react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Input, ListBox, Select } from "@heroui/react";
 
 import { Field, formatDate } from "../components/AppPrimitives";
 import { ApiDocPanel, ApiDocSelector } from "../components/ApiDocPanel";
@@ -328,9 +328,9 @@ export function PaymentTest8Workspace({ showSuccess, showError }: PaymentTest8Wo
             <Field label="支付通道">
               <Select
                 placeholder="选择支付通道"
-                selectedKeys={selectedChannel ? [selectedChannel.code] : []}
-                onChange={(e) => {
-                  const code = e.target.value;
+                selectedKey={selectedChannel?.code}
+                onSelectionChange={(key) => {
+                  const code = String(key);
                   const channel = PAYMENT8_CHANNELS.find(c => c.code === code);
                   setSelectedChannel(channel || null);
                   if (channel) {
@@ -339,11 +339,13 @@ export function PaymentTest8Workspace({ showSuccess, showError }: PaymentTest8Wo
                   }
                 }}
               >
-                {PAYMENT8_CHANNELS.map((channel) => (
-                  <SelectItem key={channel.code} textValue={channel.name}>
-                    {channel.name} ({channel.code})
-                  </SelectItem>
-                ))}
+                <ListBox>
+                  {PAYMENT8_CHANNELS.map((channel) => (
+                    <ListBox.Item key={channel.code} textValue={channel.name}>
+                      {channel.name} ({channel.code})
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
               </Select>
             </Field>
             <Field label="异步通知地址">
