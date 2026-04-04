@@ -17,9 +17,10 @@ import {
   getDefaultPayment5CallbackUrls,
   getPayment5ApiConfig,
   isProxyPayment5ApiConfig,
-  isValidFenAmount,
+  isValidYuanAmount,
   maskKey,
-  PAYMENT5_STATE_MAP,
+  TRADE_STATE_MAP,
+  RETURN_CODE_MAP,
   queryBalance,
   queryOrder,
   type Payment5ApiResult,
@@ -29,7 +30,7 @@ import {
   type QueryOrderResponse,
   type UnifiedOrderResponse
 } from "../lib/paymentApi5";
-import { payment5ApiDocs, payment5InterfaceRules, payment5OrderStates, payment5SignRules } from "../lib/paymentApi5Docs";
+import { payment5ApiDocs, payment5InterfaceRules, payment5SignRules, payment5OrderStates } from "../lib/paymentApi5Docs";
 
 type PaymentTest5WorkspaceProps = {
   showSuccess: (message: string) => void;
@@ -80,7 +81,8 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
   );
   const [showKey, setShowKey] = useState(false);
   const [orderForm, setOrderForm] = useState({
-    amount: "100",
+    amount: "100.00",
+    productName: "测试商品",
     outTradeNo: "",
     userId: "",
     userName: "",
@@ -106,7 +108,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
     setConfig((prev) => ({
       ...prev,
       notifyUrl: urls.notifyUrl,
-      returnUrl: urls.returnUrl
+      callbackUrl: urls.callbackUrl
     }));
     void refreshCallbacks();
   }, []);
@@ -160,7 +162,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
     setConfig((prev) => ({
       ...prev,
       notifyUrl: urls.notifyUrl,
-      returnUrl: urls.returnUrl
+      callbackUrl: urls.callbackUrl
     }));
     showSuccess("已自动填充拉单测试5回调地址");
   }
@@ -188,13 +190,18 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
       return;
     }
 
-    if (!isValidFenAmount(orderForm.amount)) {
-      showError(new Error("请输入整数金额，单位为元"));
+    if (!isValidYuanAmount(orderForm.amount)) {
+      showError(new Error("请输入正确的金额，单位为元，例如 100.00"));
       return;
     }
 
     if (!config.notifyUrl.trim()) {
       showError(new Error("请先配置异步通知地址"));
+      return;
+    }
+
+    if (!config.bankCode.trim()) {
+      showError(new Error("请先配置支付编码"));
       return;
     }
 
@@ -204,6 +211,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
     try {
       const result = await createUnifiedOrder(config, {
         amount: orderForm.amount.trim(),
+        productName: orderForm.productName.trim(),
         outTradeNo: orderForm.outTradeNo.trim() || undefined,
         userId: orderForm.userId.trim() || undefined,
         userName: orderForm.userName.trim() || undefined,
@@ -213,14 +221,14 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
       setOrderResult(result);
       addLog("统一下单", orderForm, result);
 
-      if (result.code === 0) {
-        const latestOutTradeNo = result.data?.out_trade_no || orderForm.outTradeNo;
+      if (result.status === 1) {
+        const latestOutTradeNo = result.data?.order_id || orderForm.outTradeNo;
         if (latestOutTradeNo) {
           setQueryForm({ outTradeNo: latestOutTradeNo });
         }
-        showSuccess(`统一下单成功，商户订单号：${result.data?.out_trade_no ?? latestOutTradeNo}`);
+        showSuccess(`统一下单成功，商户订单号：${result.data?.order_id ?? latestOutTradeNo}`);
       } else {
-        showError(new Error(result.message || "统一下单失败"));
+        showError(new Error(result.msg || "统一下单失败"));
       }
     } catch (error) {
       addLog("统一下单", orderForm, undefined, error instanceof Error ? error.message : "未知错误");
@@ -251,10 +259,10 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
       setQueryResult(result);
       addLog("查询订单", queryForm, result);
 
-      if (result.code === 0) {
+      if (result.data?.returncode === "00") {
         showSuccess("订单查询成功");
       } else {
-        showError(new Error(result.message || "订单查询失败"));
+        showError(new Error(result.msg || result.data?.returncode || "订单查询失败"));
       }
     } catch (error) {
       addLog("查询订单", queryForm, undefined, error instanceof Error ? error.message : "未知错误");
@@ -278,10 +286,10 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
       setBalanceResult(result);
       addLog("余额查询", { mchId: config.mchId }, result);
 
-      if (result.code === 0) {
+      if (result.data) {
         showSuccess("余额查询成功");
       } else {
-        showError(new Error(result.message || "余额查询失败"));
+        showError(new Error(result.msg || "余额查询失败"));
       }
     } catch (error) {
       addLog("余额查询", { mchId: config.mchId }, undefined, error instanceof Error ? error.message : "未知错误");
@@ -298,7 +306,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
           <div>
             <CardTitle className="display-font text-2xl font-bold">拉单测试5</CardTitle>
             <CardDescription className="mt-1 text-sm text-stone-600">
-              繁星通道的可视化测试页，支持统一下单、订单查询、余额查询、回调记录和静态文档查看。
+              代收通道的可视化测试页，支持统一下单、订单查询、余额查询、回调记录和静态文档查看。
             </CardDescription>
           </div>
         </CardHeader>
@@ -323,20 +331,20 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
               </div>
             </Field>
             <Field label="支付编码">
-              <Input value={config.productId} onChange={(e) => updateConfig("productId", e.currentTarget.value)} />
+              <Input value={config.bankCode} onChange={(e) => updateConfig("bankCode", e.currentTarget.value)} />
             </Field>
             <Field label="异步通知地址">
               <Input value={config.notifyUrl} onChange={(e) => updateConfig("notifyUrl", e.currentTarget.value)} placeholder="https://example.com/notify" />
             </Field>
             <Field label="跳转通知地址">
-              <Input value={config.returnUrl} onChange={(e) => updateConfig("returnUrl", e.currentTarget.value)} placeholder="留空则不传" />
+              <Input value={config.callbackUrl} onChange={(e) => updateConfig("callbackUrl", e.currentTarget.value)} placeholder="留空则不传" />
             </Field>
           </div>
 
           <div className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white/80 px-4 py-3">
             <div>
               <p className="text-sm font-semibold text-stone-800">是否使用本地代理</p>
-              <p className="text-xs text-stone-500">开启后经由 /api/payment5-proxy 转发到繁星支付域名。</p>
+              <p className="text-xs text-stone-500">开启后经由 /api/payment5-proxy 转发到支付域名。</p>
             </div>
             <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-stone-700">
               <input checked={useProxyApi} className="h-4 w-4 accent-emerald-600" onChange={(e) => handleToggleProxyApi(e.currentTarget.checked)} type="checkbox" />
@@ -352,7 +360,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
 
           <div className="rounded-[24px] border border-dashed border-stone-300 bg-white/70 p-4 text-sm leading-7 text-stone-600">
             <p><strong>商户名称：</strong><span className="ml-2">游戏城</span></p>
-            <p><strong>商户后台：</strong><span className="ml-2 break-all">http://test.demo.sanguozf.com.html</span></p>
+            <p><strong>商户后台：</strong><span className="ml-2 break-all">http://test.demo.sanguozf.com</span></p>
             <p><strong>登录账号：</strong><span className="ml-2">游戏城</span></p>
             <p><strong>商务号：</strong><span className="ml-2">260505221</span></p>
             <p><strong>当前密钥预览：</strong><span className="ml-2 font-mono">{maskKey(config.merchantKey)}</span></p>
@@ -364,13 +372,16 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
         <Card className="soft-panel rounded-[32px] border-0">
           <CardHeader>
             <CardTitle className="display-font text-xl font-bold">统一下单</CardTitle>
-            <CardDescription className="text-sm text-stone-600">金额单位为元，例如 100 表示 100.00 元。</CardDescription>
+            <CardDescription className="text-sm text-stone-600">金额单位为元，例如 100.00 表示 100.00 元。</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form className="space-y-4" onSubmit={handleCreateOrder}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="支付金额（元）">
-                  <Input value={orderForm.amount} onChange={(e) => updateOrderForm("amount", e.currentTarget.value)} placeholder="100" />
+                  <Input value={orderForm.amount} onChange={(e) => updateOrderForm("amount", e.currentTarget.value)} placeholder="100.00" />
+                </Field>
+                <Field label="商品名称">
+                  <Input value={orderForm.productName} onChange={(e) => updateOrderForm("productName", e.currentTarget.value)} placeholder="测试商品" />
                 </Field>
                 <Field label="商户订单号">
                   <div className="flex gap-2">
@@ -392,7 +403,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
               </div>
 
               <div className="rounded-2xl border border-stone-200 bg-white/80 px-4 py-3 text-sm text-stone-600">
-                当前金额折合：<span className="font-semibold text-stone-900">¥ {formatFenToYuan(orderForm.amount)}</span>
+                当前金额：<span className="font-semibold text-stone-900">¥ {orderForm.amount}</span>
               </div>
 
               <LoadingButton className="rounded-2xl bg-stone-900 px-5 py-3 text-sm font-semibold text-white hover:bg-stone-800" loading={orderLoading} loadingLabel="下单中..." type="submit">
@@ -405,17 +416,18 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-stone-800">统一下单响应</p>
-                    <p className="text-xs text-stone-500">code: {orderResult.code}</p>
+                    <p className="text-xs text-stone-500">status: {orderResult.status}</p>
                   </div>
-                  <ResultStatus ok={orderResult.code === 0} />
+                  <ResultStatus ok={orderResult.status === 1} />
                 </div>
-                <p className="text-sm text-stone-600">{orderResult.message}</p>
+                <p className="text-sm text-stone-600">{orderResult.msg}</p>
                 {orderResult.data ? (
                   <div className="grid gap-2 text-sm text-stone-700">
-                    <p>支付订单号：{orderResult.data.trade_no}</p>
-                    <p>商户订单号：{orderResult.data.out_trade_no}</p>
-                    <p>订单金额：{orderResult.data.amount} 元（¥ {formatFenToYuan(orderResult.data.amount)}）</p>
-                    <p className="break-all">支付链接：{orderResult.data.pay_url}</p>
+                    <p>商户订单号：{orderResult.data.order_id}</p>
+                    <p>平台订单号：{orderResult.data.mch_order_id}</p>
+                    <p className="break-all">支付链接（h5_url）：{orderResult.data.h5_url}</p>
+                    {orderResult.data.pay_url ? <p className="break-all">支付链接（pay_url）：{orderResult.data.pay_url}</p> : null}
+                    {orderResult.data.sdk_url ? <p className="break-all">SDK参数：{orderResult.data.sdk_url}</p> : null}
                   </div>
                 ) : null}
                 <JsonBlock value={orderResult} />
@@ -432,7 +444,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
           <CardContent className="space-y-4">
             <form className="space-y-4" onSubmit={handleQueryOrder}>
               <Field label="商户订单号">
-                <Input value={queryForm.outTradeNo} onChange={(e) => setQueryForm({ outTradeNo: e.currentTarget.value })} placeholder="请输入 outTradeNo" />
+                <Input value={queryForm.outTradeNo} onChange={(e) => setQueryForm({ outTradeNo: e.currentTarget.value })} placeholder="请输入商户订单号" />
               </Field>
               <LoadingButton className="rounded-2xl bg-stone-900 px-5 py-3 text-sm font-semibold text-white hover:bg-stone-800" loading={queryLoading} loadingLabel="查询中..." type="submit">
                 查询订单
@@ -444,21 +456,17 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-stone-800">订单查询响应</p>
-                    <p className="text-xs text-stone-500">code: {queryResult.code}</p>
+                    <p className="text-xs text-stone-500">returncode: {queryResult.data?.returncode}</p>
                   </div>
-                  <ResultStatus ok={queryResult.code === 0} />
+                  <ResultStatus ok={queryResult.data?.returncode === "00"} />
                 </div>
-                <p className="text-sm text-stone-600">{queryResult.message}</p>
                 {queryResult.data ? (
                   <div className="grid gap-2 text-sm text-stone-700">
-                    <p>支付订单号：{queryResult.data.trade_no}</p>
-                    <p>商户订单号：{queryResult.data.out_trade_no}</p>
-                    <p>订单金额：{queryResult.data.amount} 元（¥ {formatFenToYuan(queryResult.data.amount)}）</p>
-                    <p>支付金额：{queryResult.data.pay_amount ?? "-"}{queryResult.data.pay_amount !== undefined ? ` 元（¥ ${formatFenToYuan(queryResult.data.pay_amount)}）` : ""}</p>
-                    <p>订单状态：{PAYMENT5_STATE_MAP[queryResult.data.state] || queryResult.data.state}</p>
-                    <p>下单时间：{queryResult.data.create_time}</p>
-                    {queryResult.data.pay_time ? <p>支付时间：{queryResult.data.pay_time}</p> : null}
-                    <p className="break-all">支付链接：{queryResult.data.pay_url}</p>
+                    <p>商户订单号：{queryResult.data.orderid}</p>
+                    <p>交易流水号：{queryResult.data.transaction_id}</p>
+                    <p>订单金额：{queryResult.data.amount} 元</p>
+                    <p>交易状态：{TRADE_STATE_MAP[queryResult.data.trade_state] || queryResult.data.trade_state}</p>
+                    <p>支付成功时间：{queryResult.data.time_end}</p>
                   </div>
                 ) : null}
                 <JsonBlock value={queryResult} />
@@ -471,7 +479,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
       <Card className="soft-panel rounded-[32px] border-0">
         <CardHeader>
           <CardTitle className="display-font text-xl font-bold">余额查询</CardTitle>
-          <CardDescription className="text-sm text-stone-600">查询商户余额、预付和净预付，单位为元。</CardDescription>
+          <CardDescription className="text-sm text-stone-600">查询商户余额和冻结余额，单位为元。</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <LoadingButton className="rounded-2xl bg-stone-900 px-5 py-3 text-sm font-semibold text-white hover:bg-stone-800" loading={balanceLoading} loadingLabel="查询中..." onPress={handleQueryBalance}>
@@ -483,27 +491,18 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-stone-800">余额查询响应</p>
-                  <p className="text-xs text-stone-500">code: {balanceResult.code}</p>
                 </div>
-                <ResultStatus ok={balanceResult.code === 0} />
+                <ResultStatus ok={!!balanceResult.data} />
               </div>
-              <p className="text-sm text-stone-600">{balanceResult.message}</p>
               {balanceResult.data ? (
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">余额</p>
-                    <p className="mt-2 text-lg font-bold text-stone-900">¥ {formatFenToYuan(balanceResult.data.balance)}</p>
-                    <p className="mt-1 text-xs text-stone-500">{balanceResult.data.balance} 元</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">可用余额</p>
+                    <p className="mt-2 text-lg font-bold text-stone-900">¥ {balanceResult.data.balance}</p>
                   </div>
                   <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">预付</p>
-                    <p className="mt-2 text-lg font-bold text-stone-900">¥ {formatFenToYuan(balanceResult.data.earnest_balance)}</p>
-                    <p className="mt-1 text-xs text-stone-500">{balanceResult.data.earnest_balance} 元</p>
-                  </div>
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">净预付</p>
-                    <p className="mt-2 text-lg font-bold text-stone-900">¥ {formatFenToYuan(balanceResult.data.pure_earnest_balance)}</p>
-                    <p className="mt-1 text-xs text-stone-500">{balanceResult.data.pure_earnest_balance} 元</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">冻结余额</p>
+                    <p className="mt-2 text-lg font-bold text-stone-900">¥ {balanceResult.data.blockedbalance}</p>
                   </div>
                 </div>
               ) : null}
@@ -519,7 +518,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
             <div className="flex w-full items-start justify-between gap-4">
               <div>
                 <CardTitle className="display-font text-xl font-bold">支付通知记录</CardTitle>
-                <CardDescription className="text-sm text-stone-600">本地记录 notifyUrl 回调，核对签名、状态和实付金额。</CardDescription>
+                <CardDescription className="text-sm text-stone-600">本地记录 notifyUrl 回调，核对签名、状态和金额。</CardDescription>
               </div>
               <div className="flex gap-2">
                 <button className="rounded-2xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50" type="button" onClick={() => void refreshCallbacks()}>
@@ -536,8 +535,7 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
               <div className="rounded-[24px] border border-dashed border-stone-300 bg-white/70 p-6 text-sm text-stone-500">暂无回调记录。</div>
             ) : (
               callbacks.map((callback) => {
-                const isPaid = callback.state === 1;
-                const amountMatches = callback.amount === callback.pay_amount;
+                const isSuccess = callback.returncode === "00";
 
                 return (
                   <div key={callback.id} className="space-y-4 rounded-[24px] border border-stone-200 bg-white/80 p-4">
@@ -545,22 +543,16 @@ export function PaymentTest5Workspace({ showSuccess, showError }: PaymentTest5Wo
                       <Chip className={`px-3 py-1 text-xs font-semibold ${callback.verified ? "border border-emerald-200 bg-emerald-50 text-emerald-700" : "border border-rose-200 bg-rose-50 text-rose-700"}`}>
                         {callback.verified ? "签名通过" : "签名失败"}
                       </Chip>
-                      <Chip className={`px-3 py-1 text-xs font-semibold ${isPaid ? "border border-emerald-200 bg-emerald-50 text-emerald-700" : "border border-amber-200 bg-amber-50 text-amber-700"}`}>
-                        {PAYMENT5_STATE_MAP[callback.state] || `状态 ${callback.state}`}
-                      </Chip>
-                      <Chip className={`px-3 py-1 text-xs font-semibold ${amountMatches ? "border border-emerald-200 bg-emerald-50 text-emerald-700" : "border border-amber-200 bg-amber-50 text-amber-700"}`}>
-                        {amountMatches ? "实付金额匹配" : "实付金额不匹配"}
+                      <Chip className={`px-3 py-1 text-xs font-semibold ${isSuccess ? "border border-emerald-200 bg-emerald-50 text-emerald-700" : "border border-amber-200 bg-amber-50 text-amber-700"}`}>
+                        {RETURN_CODE_MAP[callback.returncode] || `状态 ${callback.returncode}`}
                       </Chip>
                     </div>
 
                     <div className="grid gap-2 text-sm text-stone-700 md:grid-cols-2">
-                      <p>商户订单号：{callback.out_trade_no}</p>
-                      <p>支付订单号：{callback.trade_no}</p>
-                      <p>通道 ID：{callback.product_id}</p>
-                      <p>订单金额：{callback.amount} 元（¥ {formatFenToYuan(callback.amount)}）</p>
-                      <p>实付金额：{callback.pay_amount} 元（¥ {formatFenToYuan(callback.pay_amount)}）</p>
-                      <p>创建时间：{callback.create_time}</p>
-                      <p>支付时间：{callback.pay_time || "-"}</p>
+                      <p>商户订单号：{callback.orderid}</p>
+                      <p>交易流水号：{callback.transaction_id}</p>
+                      <p>订单金额：{callback.amount} 元</p>
+                      <p>交易时间：{callback.datetime}</p>
                       <p>记录时间：{formatDate(callback.created_at)}</p>
                     </div>
 

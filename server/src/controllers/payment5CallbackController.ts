@@ -4,11 +4,13 @@ import { payment5CallbackService } from "../services/Payment5CallbackService.js"
 import { DEFAULT_PAYMENT5_MERCHANT_KEY, verifyPayment5Sign } from "../utils/payment5Sign.js";
 
 type Payment5CallbackBody = {
-  mchId: string;
-  tradeNo: string;
-  outTradeNo: string;
+  memberid: string;
+  orderid: string;
   amount: string | number;
-  orderStatus: string | number | undefined;
+  transaction_id: string;
+  datetime: string;
+  returncode: string;
+  attach?: string;
   sign: string;
   [key: string]: string | number | undefined;
 };
@@ -16,26 +18,37 @@ type Payment5CallbackBody = {
 export async function handlePayment5Callback(req: Request, res: Response): Promise<void> {
   try {
     const body = req.body as Payment5CallbackBody;
-    const { sign, ...params } = body;
+    const { sign, attach, ...params } = body;
 
     if (!sign) {
       res.status(400).send("FAIL: missing sign");
       return;
     }
 
-    if (!params.mchId || !params.tradeNo || !params.outTradeNo || params.amount === undefined) {
+    if (!params.memberid || !params.orderid || params.amount === undefined || !params.transaction_id || !params.datetime || !params.returncode) {
       res.status(400).send("FAIL: missing required fields");
       return;
     }
 
-    const verified = verifyPayment5Sign(params, sign, DEFAULT_PAYMENT5_MERCHANT_KEY);
+    const signParams: Record<string, string | number | undefined> = {
+      memberid: params.memberid,
+      orderid: params.orderid,
+      amount: params.amount,
+      transaction_id: params.transaction_id,
+      datetime: params.datetime,
+      returncode: params.returncode
+    };
+
+    const verified = verifyPayment5Sign(signParams, sign, DEFAULT_PAYMENT5_MERCHANT_KEY);
 
     payment5CallbackService.create({
-      mchId: String(params.mchId),
-      tradeNo: String(params.tradeNo),
-      outTradeNo: String(params.outTradeNo),
+      memberid: String(params.memberid),
+      orderid: String(params.orderid),
       amount: String(params.amount),
-      orderStatus: String(params.orderStatus ?? ""),
+      transactionId: String(params.transaction_id),
+      datetime: String(params.datetime),
+      returncode: String(params.returncode),
+      attach: attach ?? null,
       sign,
       rawData: JSON.stringify(body),
       verified
@@ -46,7 +59,7 @@ export async function handlePayment5Callback(req: Request, res: Response): Promi
       return;
     }
 
-    res.status(200).send("SUCCESS");
+    res.status(200).send("OK");
   } catch (error) {
     console.error("Payment5 callback error:", error);
     res.status(500).send("FAIL: internal error");

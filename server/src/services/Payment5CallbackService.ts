@@ -2,11 +2,13 @@ import { database } from "../db/database.js";
 
 export type Payment5Callback = {
   id: number;
-  mch_id: string;
-  trade_no: string;
-  out_trade_no: string;
+  memberid: string;
+  orderid: string;
   amount: string;
-  order_status: string;
+  transaction_id: string;
+  datetime: string;
+  returncode: string;
+  attach: string | null;
   sign: string;
   raw_data: string;
   verified: number;
@@ -14,11 +16,13 @@ export type Payment5Callback = {
 };
 
 export type CreatePayment5CallbackInput = {
-  mchId: string;
-  tradeNo: string;
-  outTradeNo: string;
+  memberid: string;
+  orderid: string;
   amount: string;
-  orderStatus: string;
+  transactionId: string;
+  datetime: string;
+  returncode: string;
+  attach: string | null;
   sign: string;
   rawData: string;
   verified: boolean;
@@ -30,22 +34,26 @@ export class Payment5CallbackService {
 
     return database.insert(
       `INSERT INTO payment5_callbacks (
-        mch_id,
-        trade_no,
-        out_trade_no,
+        memberid,
+        orderid,
         amount,
-        order_status,
+        transaction_id,
+        datetime,
+        returncode,
+        attach,
         sign,
         raw_data,
         verified,
         created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        input.mchId,
-        input.tradeNo,
-        input.outTradeNo,
+        input.memberid,
+        input.orderid,
         input.amount,
-        input.orderStatus,
+        input.transactionId,
+        input.datetime,
+        input.returncode,
+        input.attach,
         input.sign,
         input.rawData,
         input.verified ? 1 : 0,

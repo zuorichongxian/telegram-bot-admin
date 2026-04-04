@@ -1,54 +1,51 @@
-import { generateOrderNo, generateSign, generateTimestamp, isProxyApiConfig, maskKey } from "./paymentApi";
+import { md5, sortParams, isProxyApiConfig, maskKey } from "./paymentApi";
 
 export type UnifiedOrderResponse = {
-  mch_id: string | number;
-  trade_no: string;
-  out_trade_no: string;
-  amount: string | number;
-  pay_url: string;
-  ext_data?: string;
-  sign?: string;
+  status: number;
+  msg: string;
+  order_id: string;
+  mch_order_id: string;
+  h5_url?: string;
+  sdk_url?: string;
+  pay_url?: string;
 };
 
 export type QueryOrderResponse = {
-  mch_id: string | number;
-  product_id: string | number;
-  trade_no: string;
-  out_trade_no: string;
-  amount: string | number;
-  pay_amount?: string | number;
-  pay_url: string;
-  create_time: string;
-  pay_time?: string;
-  state: number;
-  sign?: string;
+  memberid: string;
+  orderid: string;
+  amount: string;
+  time_end: string;
+  transaction_id: string;
+  returncode: string;
+  trade_state: string;
+  sign: string;
 };
 
 export type QueryBalanceResponse = {
-  mch_id: string | number;
-  balance: string | number;
-  earnest_balance: string | number;
-  pure_earnest_balance: string | number;
-  sign?: string;
+  memberid: string;
+  orderid: string;
+  time: string;
+  balance: string;
+  blockedbalance: string;
+  sign: string;
 };
 
 export type Payment5ApiResult<T> = {
-  code: number;
-  message: string;
+  status?: number;
+  msg?: string;
+  message?: string;
   data?: T;
 };
 
 export type Payment5Callback = {
   id: number;
-  mch_id: string;
-  product_id: string;
-  trade_no: string;
-  out_trade_no: string;
+  memberid: string;
+  orderid: string;
   amount: string;
-  pay_amount: string;
-  state: number;
-  create_time: string;
-  pay_time: string | null;
+  transaction_id: string;
+  datetime: string;
+  returncode: string;
+  attach?: string;
   sign: string;
   raw_data: string;
   verified: number;
@@ -58,9 +55,9 @@ export type Payment5Callback = {
 export type Payment5Config = {
   mchId: string;
   merchantKey: string;
-  productId: string;
+  bankCode: string;
   notifyUrl: string;
-  returnUrl: string;
+  callbackUrl: string;
   unifiedOrderApi: string;
   queryOrderApi: string;
   queryBalanceApi: string;
@@ -73,12 +70,13 @@ type CallbackResponse<T> = {
   data: T;
 };
 
-export const PAYMENT5_STATE_MAP: Record<number, string> = {
-  0: "待支付",
-  1: "支付成功",
-  2: "支付失败",
-  3: "未出码",
-  4: "异常"
+export const TRADE_STATE_MAP: Record<string, string> = {
+  NOTPAY: "未支付",
+  SUCCESS: "已支付"
+};
+
+export const RETURN_CODE_MAP: Record<string, string> = {
+  "00": "成功"
 };
 
 export function getPayment5ApiConfig(useProxy: boolean): Payment5ApiConfig {
@@ -86,14 +84,14 @@ export function getPayment5ApiConfig(useProxy: boolean): Payment5ApiConfig {
     return {
       unifiedOrderApi: "/api/payment5-proxy/Pay_Index.html",
       queryOrderApi: "/api/payment5-proxy/Pay_Trade_query.html",
-      queryBalanceApi: "/api/payment5-proxy/user.html"
+      queryBalanceApi: "/api/payment5-proxy/Pay_Trade_querymoney.html"
     };
   }
 
   return {
     unifiedOrderApi: "http://test.demo.sanguozf.com/Pay_Index.html",
     queryOrderApi: "http://test.demo.sanguozf.com/Pay_Trade_query.html",
-    queryBalanceApi: "http://test.demo.sanguozf.com/user.html"
+    queryBalanceApi: "http://test.demo.sanguozf.com/Pay_Trade_querymoney.html"
   };
 }
 
@@ -111,21 +109,34 @@ const useProxy = typeof window !== "undefined";
 const defaultApiConfig = getPayment5ApiConfig(useProxy);
 
 export const DEFAULT_PAYMENT5_CONFIG: Payment5Config = {
-  mchId: "260505221",
-  merchantKey: "4o9hbhxpprz4cnfrxowxps7rgyu4wauy",
-  productId: "",
+  mchId: "",
+  merchantKey: "",
+  bankCode: "",
   notifyUrl: "",
-  returnUrl: "",
+  callbackUrl: "",
   ...defaultApiConfig
 };
 
-export function getDefaultPayment5CallbackUrls(): { notifyUrl: string; returnUrl: string } {
+export function getDefaultPayment5CallbackUrls(): { notifyUrl: string; callbackUrl: string } {
   const origin = window.location.origin;
 
   return {
     notifyUrl: `${origin}/api/payment5/callback`,
-    returnUrl: ""
+    callbackUrl: ""
   };
+}
+
+export function formatYuanToFen(value: string | number | null | undefined): string {
+  if (value === null || value === undefined || value === "") {
+    return "0";
+  }
+
+  const numeric = Number(value);
+  if (Number.isNaN(numeric)) {
+    return "0";
+  }
+
+  return Math.round(numeric * 100).toString();
 }
 
 export function formatFenToYuan(value: string | number | null | undefined): string {
@@ -141,45 +152,88 @@ export function formatFenToYuan(value: string | number | null | undefined): stri
   return (numeric / 100).toFixed(2);
 }
 
-export function isValidFenAmount(value: string): boolean {
-  return /^\d+$/.test(value.trim());
+export function isValidYuanAmount(value: string): boolean {
+  return /^\d+(\.\d{1,2})?$/.test(value.trim());
+}
+
+function formatDateTime(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function generatePayment5Sign(
+  params: Record<string, string | number | undefined>,
+  merchantKey: string
+): string {
+  const sortedString = sortParams(params);
+  const stringToSign = `${sortedString}&key=${merchantKey}`;
+  return md5(stringToSign);
+}
+
+export function generateOrderNo(): string {
+  const timestamp = Date.now().toString();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `P5${timestamp}${random}`.substring(0, 20);
 }
 
 export async function createUnifiedOrder(
   config: Payment5Config,
   params: {
     amount: string;
+    productName: string;
     outTradeNo?: string;
     userId?: string;
     userName?: string;
     userIp?: string;
   }
 ): Promise<Payment5ApiResult<UnifiedOrderResponse>> {
-  const reqTime = String(generateTimestamp());
   const outTradeNo = (params.outTradeNo || generateOrderNo()).trim();
+  const applyDate = formatDateTime();
   const merchantKey = config.merchantKey.trim();
 
-  const requestParams: Record<string, string | number | undefined> = {
-    mch_id: config.mchId.trim(),
-    product_id: config.productId.trim(),
-    out_trade_no: outTradeNo,
-    amount: params.amount.trim(),
-    reqTime,
-    notify_url: config.notifyUrl.trim(),
-    return_url: config.returnUrl.trim() || undefined
+  const signParams: Record<string, string | number | undefined> = {
+    pay_memberid: config.mchId.trim(),
+    pay_orderid: outTradeNo,
+    pay_applydate: applyDate,
+    pay_bankcode: config.bankCode.trim(),
+    pay_notifyurl: config.notifyUrl.trim(),
+    pay_callbackurl: config.callbackUrl.trim() || undefined,
+    pay_amount: params.amount.trim()
   };
 
-  const sign = generateSign(requestParams, merchantKey);
+  const sign = generatePayment5Sign(signParams, merchantKey);
+
+  const formData = new URLSearchParams();
+  formData.append("pay_memberid", config.mchId.trim());
+  formData.append("pay_orderid", outTradeNo);
+  formData.append("pay_applydate", applyDate);
+  formData.append("pay_bankcode", config.bankCode.trim());
+  formData.append("pay_notifyurl", config.notifyUrl.trim());
+  if (config.callbackUrl.trim()) {
+    formData.append("pay_callbackurl", config.callbackUrl.trim());
+  }
+  formData.append("pay_amount", params.amount.trim());
+  formData.append("pay_productname", params.productName.trim());
+  formData.append("pay_ip", params.userIp?.trim() || "");
+  formData.append("pay_md5sign", sign);
+  if (params.userId?.trim()) {
+    formData.append("pay_userid", params.userId.trim());
+  }
+  if (params.userName?.trim()) {
+    formData.append("pay_username", params.userName.trim());
+  }
 
   const response = await fetch(config.unifiedOrderApi, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: JSON.stringify({
-      ...requestParams,
-      sign
-    })
+    body: formData.toString()
   });
 
   return response.json();
@@ -189,51 +243,56 @@ export async function queryOrder(
   config: Payment5Config,
   outTradeNo: string
 ): Promise<Payment5ApiResult<QueryOrderResponse>> {
-  const reqTime = String(generateTimestamp());
   const merchantKey = config.merchantKey.trim();
 
-  const requestParams: Record<string, string | number | undefined> = {
-    mch_id: config.mchId.trim(),
-    out_trade_no: outTradeNo.trim(),
-    reqTime
+  const signParams: Record<string, string | number | undefined> = {
+    pay_memberid: config.mchId.trim(),
+    pay_orderid: outTradeNo.trim()
   };
 
-  const sign = generateSign(requestParams, merchantKey);
+  const sign = generatePayment5Sign(signParams, merchantKey);
+
+  const formData = new URLSearchParams();
+  formData.append("pay_memberid", config.mchId.trim());
+  formData.append("pay_orderid", outTradeNo.trim());
+  formData.append("pay_md5sign", sign);
 
   const response = await fetch(config.queryOrderApi, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: JSON.stringify({
-      ...requestParams,
-      sign
-    })
+    body: formData.toString()
   });
 
   return response.json();
 }
 
 export async function queryBalance(config: Payment5Config): Promise<Payment5ApiResult<QueryBalanceResponse>> {
-  const reqTime = String(generateTimestamp());
+  const applyDate = formatDateTime();
+  const outTradeNo = generateOrderNo();
   const merchantKey = config.merchantKey.trim();
 
-  const requestParams: Record<string, string | number | undefined> = {
-    mch_id: config.mchId.trim(),
-    reqTime
+  const signParams: Record<string, string | number | undefined> = {
+    pay_memberid: config.mchId.trim(),
+    pay_orderid: outTradeNo,
+    pay_applydate: applyDate
   };
 
-  const sign = generateSign(requestParams, merchantKey);
+  const sign = generatePayment5Sign(signParams, merchantKey);
+
+  const formData = new URLSearchParams();
+  formData.append("pay_memberid", config.mchId.trim());
+  formData.append("pay_orderid", outTradeNo);
+  formData.append("pay_applydate", applyDate);
+  formData.append("pay_md5sign", sign);
 
   const response = await fetch(config.queryBalanceApi, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: JSON.stringify({
-      ...requestParams,
-      sign
-    })
+    body: formData.toString()
   });
 
   return response.json();
@@ -252,4 +311,4 @@ export async function clearPayment5Callbacks(): Promise<CallbackResponse<null>> 
   return response.json();
 }
 
-export { generateOrderNo, generateSign, generateTimestamp, maskKey };
+export { maskKey };

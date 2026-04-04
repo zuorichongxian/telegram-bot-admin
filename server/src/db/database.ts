@@ -150,11 +150,13 @@ class DatabaseManager {
 
       CREATE TABLE IF NOT EXISTS payment5_callbacks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        mch_id TEXT NOT NULL,
-        trade_no TEXT NOT NULL,
-        out_trade_no TEXT NOT NULL,
+        memberid TEXT NOT NULL,
+        orderid TEXT NOT NULL,
         amount TEXT NOT NULL,
-        order_status INTEGER NOT NULL,
+        transaction_id TEXT NOT NULL,
+        datetime TEXT NOT NULL,
+        returncode TEXT NOT NULL,
+        attach TEXT,
         sign TEXT NOT NULL,
         raw_data TEXT NOT NULL,
         verified INTEGER NOT NULL DEFAULT 0,
@@ -200,7 +202,7 @@ class DatabaseManager {
       CREATE INDEX IF NOT EXISTS idx_payment3_callbacks_created_at ON payment3_callbacks (created_at);
       CREATE INDEX IF NOT EXISTS idx_payment4_callbacks_order_id ON payment4_callbacks (order_id);
       CREATE INDEX IF NOT EXISTS idx_payment4_callbacks_created_at ON payment4_callbacks (created_at);
-      CREATE INDEX IF NOT EXISTS idx_payment5_callbacks_out_trade_no ON payment5_callbacks (out_trade_no);
+      CREATE INDEX IF NOT EXISTS idx_payment5_callbacks_orderid ON payment5_callbacks (orderid);
       CREATE INDEX IF NOT EXISTS idx_payment5_callbacks_created_at ON payment5_callbacks (created_at);
       CREATE INDEX IF NOT EXISTS idx_payment6_callbacks_out_trade_no ON payment6_callbacks (out_trade_no);
       CREATE INDEX IF NOT EXISTS idx_payment6_callbacks_created_at ON payment6_callbacks (created_at);
