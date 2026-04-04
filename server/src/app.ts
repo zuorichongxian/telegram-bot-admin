@@ -21,6 +21,8 @@ import { payment5CallbackRouter } from "./routes/payment5CallbackRoutes.js";
 import { payment5Proxy } from "./routes/payment5ProxyRoutes.js";
 import { payment6CallbackRouter } from "./routes/payment6CallbackRoutes.js";
 import { payment6Proxy } from "./routes/payment6ProxyRoutes.js";
+import { payment8CallbackRouter } from "./routes/payment8CallbackRoutes.js";
+import { payment8Proxy } from "./routes/payment8ProxyRoutes.js";
 import { paymentCallbackRouter } from "./routes/paymentCallbackRoutes.js";
 import { paymentProxy } from "./routes/paymentProxyRoutes.js";
 import { sessionRouter } from "./routes/sessionRoutes.js";

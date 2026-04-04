@@ -8,9 +8,9 @@
   - [x] 2.1 创建 `server/src/services/Payment8CallbackService.ts`，实现回调记录的 CRUD 操作
   - [x] 2.2 创建 `server/src/controllers/payment8CallbackController.ts`，实现回调处理、查询、清空逻辑
 
-- [ ] Task 3: 创建后端路由层
-  - [ ] 3.1 创建 `server/src/routes/payment8ProxyRoutes.ts`，配置代理中间件转发到 cdnapi.hnqo.xyz
-  - [ ] 3.2 创建 `server/src/routes/payment8CallbackRoutes.ts`，定义回调相关路由
+- [x] Task 3: 创建后端路由层
+  - [x] 3.1 创建 `server/src/routes/payment8ProxyRoutes.ts`，配置代理中间件转发到 cdnapi.hnqo.xyz
+  - [x] 3.2 创建 `server/src/routes/payment8CallbackRoutes.ts`，定义回调相关路由
 
 - [ ] Task 4: 注册后端路由到服务器入口
   - [ ] 4.1 修改 `server/src/app.ts`，注册 payment8 路由和代理中间件
