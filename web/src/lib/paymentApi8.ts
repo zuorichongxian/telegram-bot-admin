@@ -176,6 +176,7 @@ export async function createUnifiedOrder(
 
   const requestParams: Record<string, string | number | undefined> = {
     mch_id: config.mchId.trim(),
+    product_id: config.productId.trim() || undefined,
     out_trade_no: outTradeNo,
     amount: params.amount.trim(),
     reqTime,
