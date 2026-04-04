@@ -21,12 +21,17 @@
 - [x] Task 6: 创建前端文档层
   - [x] 6.1 创建 `web/src/lib/paymentApi8Docs.ts`，定义接口文档数据（接口规则、签名规则、订单状态、API 文档）
 
-- [ ] Task 7: 创建前端工作区组件
-  - [ ] 7.1 创建 `web/src/workspaces/PaymentTest8Workspace.tsx`，实现完整 UI（配置面板、统一下单、订单查询、余额查询、回调记录、操作日志、接口文档）
+- [x] Task 7: 创建前端工作区组件
+  - [x] 7.1 创建 `web/src/workspaces/PaymentTest8Workspace.tsx`，实现完整 UI（配置面板、统一下单、订单查询、余额查询、回调记录、操作日志、接口文档）
 
 - [x] Task 8: 配置前端构建和路由
   - [x] 8.1 修改 `web/vite.config.ts`，新增 `/api/payment8-proxy` 和 `/api/payment8` 代理规则
   - [x] 8.2 修改 `web/src/App.tsx`，新增"接单测试8"标签页和路由
+
+- [x] Task 9: 修复支付通道编码下拉选择器（验证发现的问题）
+  - [x] 9.1 在 paymentApi8.ts 中添加 PAYMENT8_CHANNELS 常量和 PaymentChannel 类型
+  - [x] 9.2 修改 PaymentTest8Workspace.tsx，将支付编码 Input 替换为 Select 下拉组件
+  - [x] 9.3 实现通道选择后联动金额选项功能
 
 # Task Dependencies
 - [Task 2] depends on [Task 1]
