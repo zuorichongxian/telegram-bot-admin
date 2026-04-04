@@ -13,6 +13,8 @@ import { identityRouter } from "./routes/identityRoutes.js";
 import { logRouter } from "./routes/logRoutes.js";
 import { payment2CallbackRouter } from "./routes/payment2CallbackRoutes.js";
 import { payment2Proxy } from "./routes/payment2ProxyRoutes.js";
+import { payment3CallbackRouter } from "./routes/payment3CallbackRoutes.js";
+import { payment3Proxy } from "./routes/payment3ProxyRoutes.js";
 import { paymentCallbackRouter } from "./routes/paymentCallbackRoutes.js";
 import { paymentProxy } from "./routes/paymentProxyRoutes.js";
 import { sessionRouter } from "./routes/sessionRoutes.js";
@@ -48,8 +50,10 @@ export function createApp() {
   app.use(logRouter);
   app.use(paymentCallbackRouter);
   app.use(payment2CallbackRouter);
+  app.use(payment3CallbackRouter);
   app.use("/api/payment-proxy", paymentProxy);
   app.use("/api/payment2-proxy", payment2Proxy);
+  app.use("/api/payment3-proxy", payment3Proxy);
 
   if (hasBuiltWeb) {
     app.use(express.static(webDistDir));

@@ -383,6 +383,10 @@ function md5(message: string): string {
   return tempValue.toUpperCase();
 }
 
+export function md5Hash(message: string): string {
+  return md5(message);
+}
+
 export function sortParams(params: Record<string, string | number | undefined>): string {
   const sortedKeys = Object.keys(params)
     .filter((key) => {

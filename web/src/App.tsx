@@ -6,6 +6,7 @@ import { PaymentResultPage } from "./pages/PaymentResultPage";
 import { API_BASE_URL } from "./lib/api";
 import { BotManagementWorkspace } from "./workspaces/BotManagementWorkspace";
 import { PaymentTest2Workspace } from "./workspaces/PaymentTest2Workspace";
+import { PaymentTest3Workspace } from "./workspaces/PaymentTest3Workspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
 
@@ -14,7 +15,7 @@ type FlashState = {
   message: string;
 };
 
-type WorkspaceTab = "user" | "bot" | "payment" | "payment2";
+type WorkspaceTab = "user" | "bot" | "payment" | "payment2" | "payment3";
 
 const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
@@ -36,6 +37,11 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
     id: "payment2",
     label: "拉单测试2",
     description: "盛兴通道测试页，支持统一下单、查单、余额查询和回调验签。"
+  },
+  {
+    id: "payment3",
+    label: "接单测试3",
+    description: "四方支付新网关测试页，支持下单、查单、回调验签和文档查看。"
   }
 ];
 
@@ -78,7 +84,7 @@ function MainApp() {
                 用网页控制台管理 Telegram 身份、Bot 和支付测试页
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-600 sm:text-base">
-                当前控制台保留用户身份工作区和 Bot 管理工作区，并新增两套支付测试面板。Bot 需先通过 @BotFather 创建，再录入
+                当前控制台保留用户身份工作区和 Bot 管理工作区，并新增三套支付测试面板。Bot 需先通过 @BotFather 创建，再录入
                 Token 到系统中。
               </p>
             </div>
@@ -132,8 +138,10 @@ function MainApp() {
           <BotManagementWorkspace showError={showError} showSuccess={showSuccess} />
         ) : activeTab === "payment" ? (
           <PaymentTestWorkspace showError={showError} showSuccess={showSuccess} />
-        ) : (
+        ) : activeTab === "payment2" ? (
           <PaymentTest2Workspace showError={showError} showSuccess={showSuccess} />
+        ) : (
+          <PaymentTest3Workspace showError={showError} showSuccess={showSuccess} />
         )}
       </div>
     </div>
