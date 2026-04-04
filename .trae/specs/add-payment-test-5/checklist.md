@@ -1,12 +1,12 @@
-- [ ] 后端 payment5Sign.ts 签名工具实现完整（生成签名、验证签名）
-- [ ] 数据库 payment5_callbacks 表创建语句和索引已添加到 database.ts
-- [ ] Payment5CallbackService 服务层 CRUD 方法完整
-- [ ] payment5CallbackController 回调处理/查询/清空逻辑正确
-- [ ] payment5CallbackRoutes 路由注册（POST callback, GET callbacks, DELETE callbacks）
-- [ ] payment5ProxyRoutes 代理中间件转发到 fanxingpay 网关，路径重写和签名重写正确
-- [ ] server/src/app.ts 已注册 payment5 路由和代理
-- [ ] 前端 paymentApi5.ts 类型定义、默认配置、API 函数完整
-- [ ] 前端 paymentApi5Docs.ts 接口文档数据完整
-- [ ] PaymentTest5Workspace.tsx UI 组件包含全部功能区域（配置面板、下单、查单、余额、回调、日志、文档）
-- [ ] App.tsx 新增"接单测试5"标签页并渲染 PaymentTest5Workspace
-- [ ] vite.config.ts 新增 /api/payment5-proxy 和 /api/payment5 代理规则
+- [x] 后端 payment5Sign.ts 签名工具实现完整（生成签名、验证签名）
+- [x] 数据库 payment5_callbacks 表创建语句和索引已添加到 database.ts
+- [x] Payment5CallbackService 服务层 CRUD 方法完整
+- [x] payment5CallbackController 回调处理/查询/清空逻辑正确
+- [x] payment5CallbackRoutes 路由注册（POST callback, GET callbacks, DELETE callbacks）
+- [x] payment5ProxyRoutes 代理中间件转发到 fanxingpay 网关，路径重写和签名重写正确
+- [x] server/src/app.ts 已注册 payment5 路由和代理
+- [x] 前端 paymentApi5.ts 类型定义、默认配置、API 函数完整
+- [x] 前端 paymentApi5Docs.ts 接口文档数据完整
+- [x] PaymentTest5Workspace.tsx UI 组件包含全部功能区域（配置面板、下单、查单、余额、回调、日志、文档）
+- [x] App.tsx 新增"接单测试5"标签页并渲染 PaymentTest5Workspace
+- [x] vite.config.ts 新增 /api/payment5-proxy 和 /api/payment5 代理规则
