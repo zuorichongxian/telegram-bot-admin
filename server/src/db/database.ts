@@ -205,7 +205,11 @@ class DatabaseManager {
         verified INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL
       );
+    `);
 
+    this.applyCompatibilityMigrations();
+
+    this.database.run(`
       CREATE UNIQUE INDEX IF NOT EXISTS idx_bots_bot_user_id ON bots (bot_user_id);
       CREATE INDEX IF NOT EXISTS idx_payment_callbacks_merchant_order_no ON payment_callbacks (merchant_order_no);
       CREATE INDEX IF NOT EXISTS idx_payment_callbacks_created_at ON payment_callbacks (created_at);
@@ -241,6 +245,57 @@ class DatabaseManager {
       `,
       [now]
     );
+  }
+
+  private applyCompatibilityMigrations() {
+    if (!this.hasTable("payment5_callbacks")) {
+      return;
+    }
+
+    const columns = this.getTableColumns("payment5_callbacks");
+
+    if (!columns.has("orderid")) {
+      this.database.run(
+        `ALTER TABLE payment5_callbacks ADD COLUMN orderid TEXT NOT NULL DEFAULT '';`
+      );
+
+      if (columns.has("order_id")) {
+        this.database.run(`
+          UPDATE payment5_callbacks
+          SET orderid = order_id
+          WHERE (orderid IS NULL OR orderid = '')
+            AND order_id IS NOT NULL;
+        `);
+      }
+    }
+  }
+
+  private hasTable(tableName: string): boolean {
+    const row = this.get<{ count: number }>(
+      `SELECT COUNT(1) AS count FROM sqlite_master WHERE type = 'table' AND name = ?;`,
+      [tableName]
+    );
+
+    return Number(row?.count ?? 0) > 0;
+  }
+
+  private getTableColumns(tableName: string): Set<string> {
+    const statement = this.database.prepare(`PRAGMA table_info(${tableName});`);
+
+    try {
+      const columns = new Set<string>();
+
+      while (statement.step()) {
+        const row = statement.getAsObject() as { name?: unknown };
+        if (typeof row.name === "string") {
+          columns.add(row.name);
+        }
+      }
+
+      return columns;
+    } finally {
+      statement.free();
+    }
   }
 
   get database() {
