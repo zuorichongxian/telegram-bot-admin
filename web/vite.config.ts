@@ -32,6 +32,15 @@ export default defineConfig({
         target: "http://localhost:3200",
         changeOrigin: true
       },
+      "/api/payment9-proxy": {
+        target: "http://localhost:3200",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/payment9-proxy/, "")
+      },
+      "/api/payment9": {
+        target: "http://localhost:3200",
+        changeOrigin: true
+      },
       "/api/payment3-proxy": {
         target: "http://127.0.0.1:3001",
         changeOrigin: true
