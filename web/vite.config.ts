@@ -24,22 +24,22 @@ export default defineConfig({
         changeOrigin: true
       },
       "/api/payment8-proxy": {
-        target: "http://localhost:3200",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/payment8-proxy/, "")
+        target: "http://127.0.0.1:3001",
+        changeOrigin: true
       },
       "/api/payment8": {
-        target: "http://localhost:3200",
-        changeOrigin: true
+        target: "http://127.0.0.1:3001",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "")
       },
       "/api/payment9-proxy": {
-        target: "http://localhost:3200",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/payment9-proxy/, "")
+        target: "http://127.0.0.1:3001",
+        changeOrigin: true
       },
       "/api/payment9": {
-        target: "http://localhost:3200",
-        changeOrigin: true
+        target: "http://127.0.0.1:3001",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "")
       },
       "/api/payment3-proxy": {
         target: "http://127.0.0.1:3001",
