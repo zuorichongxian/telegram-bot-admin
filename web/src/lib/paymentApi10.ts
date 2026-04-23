@@ -147,10 +147,9 @@ export function getDefaultPayment10CallbackUrls(): {
   notifyUrl: string;
   returnUrl: string;
 } {
-  const origin = window.location.origin;
-
   return {
-    notifyUrl: `${origin}/api/payment10/callback`,
+    notifyUrl:
+      "https://telegram-bot-admin-web-production-a10b.up.railway.app/payment10/callback",
     returnUrl: ""
   };
 }
