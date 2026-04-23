@@ -13,6 +13,7 @@ import { PaymentTest6Workspace } from "./workspaces/PaymentTest6Workspace";
 import { PaymentTest7Workspace } from "./workspaces/PaymentTest7Workspace";
 import { PaymentTest8Workspace } from "./workspaces/PaymentTest8Workspace";
 import { PaymentTest9Workspace } from "./workspaces/PaymentTest9Workspace";
+import { PaymentTest10Workspace } from "./workspaces/PaymentTest10Workspace";
 import { PaymentTestWorkspace } from "./workspaces/PaymentTestWorkspace";
 import { UserIdentityWorkspace } from "./workspaces/UserIdentityWorkspace";
 
@@ -21,18 +22,30 @@ type FlashState = {
   message: string;
 };
 
-type WorkspaceTab = "user" | "bot" | "payment" | "payment2" | "payment3" | "payment4" | "payment5" | "payment6" | "payment7" | "payment8" | "payment9";
+type WorkspaceTab =
+  | "user"
+  | "bot"
+  | "payment"
+  | "payment2"
+  | "payment3"
+  | "payment4"
+  | "payment5"
+  | "payment6"
+  | "payment7"
+  | "payment8"
+  | "payment9"
+  | "payment10";
 
 const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
     id: "user",
     label: "用户身份",
-    description: "保留现有用户登录、Identity 切换和消息发送能力。"
+    description: "管理 Telegram 用户登录、身份切换和消息发送。"
   },
   {
     id: "bot",
     label: "Bot 管理",
-    description: "接入多个 Bot，并将资料模板一键应用到指定 Bot。"
+    description: "接入多个 Bot，并将资料模板应用到指定 Bot。"
   },
   {
     id: "payment",
@@ -42,42 +55,47 @@ const tabs: Array<{ id: WorkspaceTab; label: string; description: string }> = [
   {
     id: "payment2",
     label: "接单测试2",
-    description: "盛兴通道测试页，支持统一下单、查单、余额查询和回调验签。"
+    description: "通道2测试页，支持统一下单、查单、余额查询和回调验签。"
   },
   {
     id: "payment3",
     label: "接单测试3",
-    description: "四方支付新网关测试页，支持下单、查单、回调验签和文档查看。"
+    description: "通道3测试页，支持下单、查单、回调验签和文档查看。"
   },
   {
     id: "payment4",
     label: "接单测试4",
-    description: "鲨鱼支付通道测试页，支持下单、旧/新查单、回调验签和文档查看。"
+    description: "通道4测试页，支持下单、查单、回调验签和文档查看。"
   },
   {
     id: "payment5",
     label: "接单测试5",
-    description: "繁星支付通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
+    description: "通道5测试页，支持下单、查单、余额查询、回调验签和文档查看。"
   },
   {
     id: "payment6",
     label: "接单测试6",
-    description: "万盛通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
+    description: "通道6测试页，支持下单、查单、余额查询、回调验签和文档查看。"
   },
   {
     id: "payment7",
     label: "接单测试7",
-    description: "金安支付通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
+    description: "通道7测试页，支持下单、查单、余额查询、回调验签和文档查看。"
   },
   {
     id: "payment8",
     label: "接单测试8",
-    description: "晚州支付通道测试页，支持下单、查单、余额查询、回调验签和文档查看。"
+    description: "通道8测试页，支持下单、查单、余额查询、回调验签和文档查看。"
   },
   {
     id: "payment9",
     label: "接单测试9",
-    description: "新支付通道测试页，支持下单、查单、回调验签和文档查看。"
+    description: "通道9测试页，支持下单、查单、回调验签和文档查看。"
+  },
+  {
+    id: "payment10",
+    label: "接单测试10",
+    description: "新通道测试页，支持下单、查单、余额、回调验签和接口文档。"
   }
 ];
 
@@ -86,19 +104,12 @@ function MainApp() {
   const [flash, setFlash] = useState<FlashState | null>(null);
 
   function showSuccess(message: string) {
-    setFlash({
-      type: "success",
-      message
-    });
+    setFlash({ type: "success", message });
   }
 
   function showError(error: unknown) {
     const message = error instanceof Error ? error.message : "发生了未知错误。";
-
-    setFlash({
-      type: "error",
-      message
-    });
+    setFlash({ type: "error", message });
   }
 
   const currentTab = tabs.find((tab) => tab.id === activeTab) ?? tabs[0];
@@ -115,13 +126,14 @@ function MainApp() {
           <div className="absolute inset-y-0 right-0 hidden w-72 translate-x-14 rounded-full bg-emerald-200/30 blur-3xl lg:block" />
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">Telegram Admin MVP</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">
+                Telegram Admin MVP
+              </p>
               <h1 className="display-font mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-5xl">
-                用网页控制台管理 Telegram 身份、Bot 和支付测试页
+                网页控制台管理 Telegram 身份、Bot 与支付测试
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-600 sm:text-base">
-                当前控制台保留用户身份工作区和 Bot 管理工作区，并新增四套支付测试面板。Bot 需先通过 @BotFather 创建，再录入
-                Token 到系统中。
+                保留用户身份和 Bot 管理能力，并提供多个支付通道的可视化调试工作区。
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -130,7 +142,11 @@ function MainApp() {
                 value={API_BASE_URL.replace(/^https?:\/\//, "")}
                 hint="Express + SQLite + gramjs"
               />
-              <MetricCard label="当前工作区" value={currentTab.label} hint={currentTab.description} />
+              <MetricCard
+                label="当前工作区"
+                value={currentTab.label}
+                hint={currentTab.description}
+              />
             </div>
           </div>
         </header>
@@ -138,7 +154,6 @@ function MainApp() {
         <nav className="soft-panel flex flex-wrap gap-3 rounded-[28px] p-3">
           {tabs.map((tab) => {
             const active = tab.id === activeTab;
-
             return (
               <button
                 key={tab.id}
@@ -190,8 +205,10 @@ function MainApp() {
           <PaymentTest8Workspace showError={showError} showSuccess={showSuccess} />
         ) : activeTab === "payment9" ? (
           <PaymentTest9Workspace showError={showError} showSuccess={showSuccess} />
+        ) : activeTab === "payment10" ? (
+          <PaymentTest10Workspace showError={showError} showSuccess={showSuccess} />
         ) : (
-          <PaymentTest4Workspace showError={showError} showSuccess={showSuccess} />
+          <PaymentTestWorkspace showError={showError} showSuccess={showSuccess} />
         )}
       </div>
     </div>
