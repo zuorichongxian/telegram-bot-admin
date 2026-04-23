@@ -53,6 +53,41 @@ export async function handlePayment10Callback(
       DEFAULT_PAYMENT10_MERCHANT_KEY
     );
 
+    if (!verified) {
+      payment10CallbackService.create({
+        mchId: String(params.mchId),
+        tradeNo: String(params.tradeNo),
+        outTradeNo: String(params.outTradeNo),
+        originTradeNo: params.originTradeNo
+          ? String(params.originTradeNo)
+          : undefined,
+        amount: String(params.amount),
+        subject: String(params.subject),
+        body: params.body ? String(params.body) : undefined,
+        extParam: params.extParam ? String(params.extParam) : undefined,
+        state: Number(params.state),
+        notifyTime: String(params.notifyTime),
+        sign,
+        rawData: JSON.stringify(body),
+        verified: false
+      });
+
+      res.status(200).send("FAIL: sign verification failed");
+      return;
+    }
+
+    const duplicatedPaidOrder =
+      Number(params.state) === 1 &&
+      payment10CallbackService.findLatestSuccessfulByOutTradeNo(
+        String(params.outTradeNo)
+      );
+
+    if (duplicatedPaidOrder) {
+      // Idempotent ack: same order already processed as paid, so ack directly.
+      res.status(200).send("SUCCESS");
+      return;
+    }
+
     payment10CallbackService.create({
       mchId: String(params.mchId),
       tradeNo: String(params.tradeNo),
@@ -68,13 +103,8 @@ export async function handlePayment10Callback(
       notifyTime: String(params.notifyTime),
       sign,
       rawData: JSON.stringify(body),
-      verified
+      verified: true
     });
-
-    if (!verified) {
-      res.status(200).send("FAIL: sign verification failed");
-      return;
-    }
 
     res.status(200).send("SUCCESS");
   } catch (error) {

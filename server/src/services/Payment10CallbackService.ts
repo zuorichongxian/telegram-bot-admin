@@ -81,6 +81,19 @@ export class Payment10CallbackService {
     );
   }
 
+  findLatestSuccessfulByOutTradeNo(outTradeNo: string): Payment10Callback | null {
+    return database.get<Payment10Callback>(
+      `SELECT *
+       FROM payment10_callbacks
+       WHERE out_trade_no = ?
+         AND verified = 1
+         AND state = 1
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [outTradeNo]
+    );
+  }
+
   deleteAll(): void {
     database.execute(`DELETE FROM payment10_callbacks`);
   }
